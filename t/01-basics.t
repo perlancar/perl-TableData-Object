@@ -26,6 +26,9 @@ subtest aos => sub {
     is_deeply($td->as_aoaos     , [[10],[11],[12]], "as_aoaos");
     is_deeply($td->rows_as_hash , [{num=>10},{num=>11},{num=>12}], "rows_as_hash");
     is_deeply($td->as_aohos     , [{num=>10},{num=>11},{num=>12}], "as_aohos");
+
+    is_deeply($td->column_data("num"), [10,11,12], "column_data");
+    dies_ok { $td->column_data("data") } "column_data() on unknown column dies";
 };
 
 my $tspec = {
@@ -51,6 +54,9 @@ subtest aoaos => sub {
     is_deeply($td->as_aoaos     , [["andi",3000],["budi",4000],["citra",2500]], "as_aoaos");
     is_deeply($td->rows_as_hash , [{name=>"andi",salary=>3000},{name=>"budi",salary=>4000},{name=>"citra",salary=>2500}], "rows_as_hash");
     is_deeply($td->as_aohos     , [{name=>"andi",salary=>3000},{name=>"budi",salary=>4000},{name=>"citra",salary=>2500}], "as_aohos");
+
+    is_deeply($td->column_data("salary"), [3000,4000,2500], "column_data");
+    dies_ok { $td->column_data("x") } "column_data() on unknown column dies";
 };
 
 subtest "aoaos with spec" => sub {
@@ -73,6 +79,9 @@ subtest aohos => sub {
     is_deeply($td->as_aoaos     , [["andi",undef,3000],["budi","test",4000],["citra",undef,2500]], "rows_as_array");
     is_deeply($td->rows_as_hash , [{name=>"andi",salary=>3000},{name=>"budi",salary=>4000,note=>"test"},{name=>"citra",salary=>2500}], "rows_as_hash");
     is_deeply($td->as_aohos     , [{name=>"andi",salary=>3000},{name=>"budi",salary=>4000,note=>"test"},{name=>"citra",salary=>2500}], "as_aohos");
+
+    is_deeply($td->column_data("salary"), [3000,4000,2500], "column_data");
+    dies_ok { $td->column_data("x") } "column_data() on unknown column dies";
 };
 
 subtest "aohos with spec" => sub {
@@ -86,4 +95,3 @@ subtest "aohos with spec" => sub {
 
 DONE_TESTING:
 done_testing;
-

@@ -79,6 +79,14 @@ sub rows_as_hash {
     [ map {{$cols->[0] => $_}} @{$self->{data}} ];
 }
 
+sub column_data {
+    require List::MoreUtils;
+    my ($self, $name) = @_;
+    my $idx = List::MoreUtils::firstidx(sub { $_ eq $name },
+                                        @{ $self->{columns} });
+    die "Unknown column '$name'" unless $idx >= 0;
+    $self->{data};
+}
 
 package
     TableData::Object::aoaos;
@@ -110,6 +118,14 @@ sub rows_as_hash {
         push @res, $hos;
     }
     \@res;
+}
+
+sub column_data {
+    my ($self, $name) = @_;
+    my $idx = List::MoreUtils::firstidx(sub { $_ eq $name },
+                                        @{ $self->{columns} });
+    die "Unknown column '$name'" unless $idx >= 0;
+    [ map { $_->[$idx] } @{ $self->{data} } ];
 }
 
 
@@ -157,6 +173,14 @@ sub rows_as_array {
 
 sub rows_as_hash { shift->{data} }
 
+sub column_data {
+    my ($self, $name) = @_;
+    my $idx = List::MoreUtils::firstidx(sub { $_ eq $name },
+                                        @{ $self->{columns} });
+    die "Unknown column '$name'" unless $idx >= 0;
+    [ map { $_->{$name} } @{ $self->{data} } ];
+}
+
 1;
 # ABSTRACT: Manipulate table data
 
@@ -181,6 +205,10 @@ sub rows_as_hash { shift->{data} }
 
  # set names of columns
  $td->columns(["name", "salary"]);
+
+ # retrieve a single column
+ $col = $td->column("salary"); # -> [3000,4000,2500]
+ $col = $td->column("foo");    # dies, unknown column
 
  # retrieve rows data, each row as arrays
  $rows = $td->rows_as_array; # -> (["Andi",3000], ["Budi",4000], ["Cinta",2500])
@@ -242,6 +270,10 @@ L<TableDef>.
 =head2 columns([ $cols ]) => array
 
 Get or set columns.
+
+=head2 column_data($name) => array
+
+Get a single column data.
 
 =head2 rows_as_array => array of array of scalar
 
