@@ -28,6 +28,14 @@ subtest aos => sub {
     is_deeply($td->as_aohos     , [{num=>10},{num=>11},{num=>12}], "as_aohos");
 };
 
+my $tspec = {
+    fields => {
+        name   => {pos=>0, },
+        salary => {pos=>1, },
+    },
+    pk => "name",
+};
+
 subtest aoaos => sub {
     my $td = table([["andi",3000],["budi",4000],["citra",2500]]);
 
@@ -45,6 +53,12 @@ subtest aoaos => sub {
     is_deeply($td->as_aohos     , [{name=>"andi",salary=>3000},{name=>"budi",salary=>4000},{name=>"citra",salary=>2500}], "as_aohos");
 };
 
+subtest "aoaos with spec" => sub {
+    my $td = table([["andi",3000],["budi",4000],["citra",2500]], $tspec);
+
+    is_deeply($td->columns, ["name","salary"], "default columns");
+};
+
 subtest aohos => sub {
     my $td = table([{name=>"andi",salary=>3000},
                     {name=>"budi",salary=>4000,note=>"test"},
@@ -59,6 +73,15 @@ subtest aohos => sub {
     is_deeply($td->as_aoaos     , [["andi",undef,3000],["budi","test",4000],["citra",undef,2500]], "rows_as_array");
     is_deeply($td->rows_as_hash , [{name=>"andi",salary=>3000},{name=>"budi",salary=>4000,note=>"test"},{name=>"citra",salary=>2500}], "rows_as_hash");
     is_deeply($td->as_aohos     , [{name=>"andi",salary=>3000},{name=>"budi",salary=>4000,note=>"test"},{name=>"citra",salary=>2500}], "as_aohos");
+};
+
+subtest "aohos with spec" => sub {
+    my $td = table([{name=>"andi",salary=>3000},
+                    {name=>"budi",salary=>4000,note=>"test"},
+                    {name=>"citra",salary=>2500}], $tspec);
+
+    is_deeply($td->columns, ["name","salary"], "default columns");
+    is_deeply($td->rows_as_array, [["andi",3000],["budi",4000],["citra",2500]], "rows_as_array");
 };
 
 DONE_TESTING:

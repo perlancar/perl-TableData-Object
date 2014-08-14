@@ -17,15 +17,15 @@ our @EXPORT_OK = qw(table);
 sub table { __PACKAGE__->new(@_) }
 
 sub new {
-    my ($class, $data) = @_;
+    my ($class, $data, $spec) = @_;
     if (!defined($data)) {
         die "Please specify table data";
     } elsif (is_aos($data, {max=>10})) {
         TableData::Object::aos->new($data);
     } elsif (is_aoaos($data, {max=>10})) {
-        TableData::Object::aoaos->new($data);
+        TableData::Object::aoaos->new($data, $spec);
     }elsif (is_aohos($data, {max=>10})) {
-        TableData::Object::aohos->new($data);
+        TableData::Object::aohos->new($data, $spec);
     } else {
         die "Unknown table data form, please supply array of scalar, ".
             "array of array of scalar, or array of hash of scalar";
@@ -48,6 +48,16 @@ sub columns {
     $self->{columns};
 }
 
+sub _columns_from_spec {
+    my ($self, $spec) = @_;
+    my @cols;
+    my $ff = $spec->{fields};
+    for my $fn (keys %$ff) {
+        my $f = $ff->{$fn};
+        $cols[ $f->{pos} ] = $fn;
+    }
+    \@cols;
+}
 
 package
     TableData::Object::aos;
@@ -75,8 +85,18 @@ package
 our @ISA = qw(TableData::Object);
 
 sub new {
-    my ($class, $data) = @_;
-    bless {columns=>[map {"column$_"} 0..@{$data->[0]}-1], data=>$data}, $class;
+    my ($class, $data, $spec) = @_;
+    my $self = bless {}, $class;
+
+    my $cols;
+    if ($spec) {
+        $cols = $self->_columns_from_spec($spec);
+    } else {
+        $cols = [map {"column$_"} 0..@{$data->[0]}-1];
+    }
+    $self->{columns} = $cols;
+    $self->{data} = $data;
+    $self;
 }
 
 sub rows_as_array { shift->{data} }
@@ -98,12 +118,22 @@ package
 our @ISA = qw(TableData::Object);
 
 sub new {
-    my ($class, $data) = @_;
-    my %cols;
-    for my $row (@$data) {
-        $cols{$_}++ for keys %$row;
+    my ($class, $data, $spec) = @_;
+    my $self = bless {}, $class;
+
+    my $cols;
+    if ($spec) {
+        $cols = $self->_columns_from_spec($spec);
+    } else {
+        my %cols0;
+        for my $row (@$data) {
+            $cols0{$_}++ for keys %$row;
+        }
+        $cols = [sort keys %cols0];
     }
-    bless {columns=>[sort keys %cols], data=>$data}, $class;
+    $self->{columns} = $cols;
+    $self->{data} = $data;
+    $self;
 }
 
 sub columns {
@@ -195,12 +225,19 @@ cannot be changed.
 
 =head1 FUNCTIONS
 
-=head2 table($data) => obj
+=head2 table($data[, $spec]) => obj
 
 Exportable. Shortcut for constructor.
 
 
 =head1 METHODS
+
+=head2 new($data[, $spec]) => obj
+
+Constructor.
+
+C<$spec> is optional and should be table specification hash according
+L<TableDef>.
 
 =head2 columns([ $cols ]) => array
 
@@ -220,8 +257,6 @@ Get or set columns.
 
 
 =head1 TODO
-
-Specify table spec (L<TableDef>) to preset column names and orders.
 
 
 =head1 SEE ALSO
