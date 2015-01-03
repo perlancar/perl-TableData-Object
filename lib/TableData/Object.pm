@@ -288,9 +288,6 @@ Get a single column data.
 =head2 as_aohos() => array of hash of scalar
 
 
-=head1 TODO
-
-
 =head1 SEE ALSO
 
 L<TableDef>
