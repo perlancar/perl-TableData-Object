@@ -1,4 +1,4 @@
-package TableData::Object::Common;
+package TableData::Object::Base;
 
 # DATE
 # VERSION
