@@ -35,3 +35,5 @@ sub new {
 
 1;
 # ABSTRACT: Manipulate data structure via table object
+
+=for Pod::Coverage .+

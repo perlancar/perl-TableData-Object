@@ -50,3 +50,6 @@ sub col_count {
 }
 
 1;
+# ABSTRACT: Base class for TableData::Object::*
+
+=for Pod::Coverage .+

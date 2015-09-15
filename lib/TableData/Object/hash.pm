@@ -7,7 +7,7 @@ use 5.010001;
 use strict;
 use warnings;
 
-use parent 'TableData::Object::Common';
+use parent 'TableData::Object::Base';
 
 sub new {
     my ($class, $data) = @_;
@@ -58,3 +58,5 @@ sub sort_rows {
 
 1;
 # ABSTRACT: Manipulate hash via table object
+
+=for Pod::Coverage .+
