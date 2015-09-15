@@ -2,7 +2,7 @@ Revision history for TableData-Object
 
 0.03    2015-09-15 (PERLANCAR)
 
-        - Rewrite.
+        - [Incompatible changes] Rewrite, with different interface.
 
         - Implement row_count, col_count, and sort.
 
