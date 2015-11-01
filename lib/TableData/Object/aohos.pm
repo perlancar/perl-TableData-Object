@@ -68,7 +68,42 @@ sub sort_rows {
     __PACKAGE__->new(\@aohos, $self->{spec});
 }
 
+sub rows {
+    my $self = shift;
+    $self->{data};
+}
+
 1;
-# ABSTRACT: Manipulate array of (hashes of scalars) via table object
+# ABSTRACT: Manipulate array of hashes-of-scalars via table object
 
 =for Pod::Coverage .+
+
+=head1 SYNOPSIS
+
+To create:
+
+ use TableData::Object qw(table);
+
+ my $td = table([{foo=>10, bar=>10}, {bar=>20, baz=>20}]);
+
+or:
+
+ use TableData::Object::aohos;
+
+ my $td = TableData::Object::aohos->new([{foo=>10, bar=>10}, {bar=>20, baz=>20}]);
+
+To manipulate:
+
+ $td->cols_by_name; # {foo=>0, bar=>1, baz=>2}
+ $td->cols_by_idx;  # ['foo', 'bar', 'baz']
+
+
+=head1 DESCRIPTION
+
+This class lets you manipulate an array of hashes-of-scalars as a table object.
+The table will have columns from all the hashes' keys.
+
+
+=head1 METHODS
+
+See L<TableData::Object::Base>.

@@ -40,4 +40,31 @@ sub new {
 1;
 # ABSTRACT: Manipulate data structure via table object
 
-=for Pod::Coverage .+
+=for Pod::Coverage ^$
+
+=head1 FUNCTIONS
+
+=head2 table($data[ , $spec ]) => obj
+
+Shortcut for C<< TableData::Object->new(...) >>.
+
+
+=head1 METHODS
+
+=head2 new($data[ , $spec ]) => obj
+
+Detect the structure of C<$data> and create the appropriate
+C<TableData::Object::FORM> object.
+
+
+=head1 SEE ALSO
+
+L<TableData::Object::Base> for list of available methods.
+
+L<TableData::Object::aos>
+
+L<TableData::Object::aoaos>
+
+L<TableData::Object::aohos>
+
+L<TableData::Object::hash>

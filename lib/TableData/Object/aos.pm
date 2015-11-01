@@ -43,7 +43,48 @@ sub sort_rows {
     __PACKAGE__->new(\@aos);
 }
 
+sub rows {
+    my $self = shift;
+    $self->{data};
+}
+
+sub select {
+    my ($self, $cols, $func_filter_row) = @_;
+
+    $self->_select();
+}
+
 1;
 # ABSTRACT: Manipulate array of scalars via table object
 
-=for Pod::Coverage .+
+=for Pod::Coverage .*
+
+=head1 SYNOPSIS
+
+To create:
+
+ use TableData::Object qw(table);
+
+ my $td = table([1,2,3]);
+
+or:
+
+ use TableData::Object::aos;
+
+ my $td = TableData::Object::aos->new([1,2,3]);
+
+To manipulate:
+
+ $td->cols_by_name; # {elem=>0}
+ $td->cols_by_idx;  # ['elem']
+
+
+=head1 DESCRIPTION
+
+This class lets you manipulate an array of scalars as a table object. The table
+will have a single column named C<elem>.
+
+
+=head1 METHODS
+
+See L<TableData::Object::Base>.
