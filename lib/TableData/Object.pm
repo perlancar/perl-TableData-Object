@@ -20,16 +20,20 @@ sub new {
     if (!defined($data)) {
         die "Please specify table data";
     } elsif (ref($data) eq 'HASH') {
+        require TableData::Object::hash;
         TableData::Object::hash->new($data);
-    } elsif (is_aos($data, {max=>10})) {
-        TableData::Object::aos->new($data);
     } elsif (is_aoaos($data, {max=>10})) {
+        require TableData::Object::aoaos;
         TableData::Object::aoaos->new($data, $spec);
-    }elsif (is_aohos($data, {max=>10})) {
+    } elsif (is_aohos($data, {max=>10})) {
+        require TableData::Object::aohos;
         TableData::Object::aohos->new($data, $spec);
+    } elsif (ref($data) eq 'ARRAY') {
+        require TableData::Object::aos;
+        TableData::Object::aos->new($data);
     } else {
         die "Unknown table data form, please supply array of scalar, ".
-            "array of array of scalar, or array of hash of scalar";
+            "array of array-of-scalar, or array of hash-of-scalar";
     }
 }
 
