@@ -64,20 +64,52 @@ sub _select {
 
     my $spec = {fields=>{}};
     my $i = 0;
-    for my $col (@$cols) {
-        die "Column '$col' does not exist" unless $self->col_exists($col);
-        $spec->{fields}{$col} = {%{$self->{spec}{fields}{$col} // {}}, pos=>$i};
+    my %seen_cols;
+    for my $col0 (@$cols) {
+        die "Column '$col0' does not exist" unless $self->col_exists($col0);
+
+        my $col = $col0;
+        my $j = 1;
+        while ($seen_cols{$col}) {
+            $j++;
+            $col = "${col0}_$j";
+        }
+        $seen_cols{$col} = 1;
+
+        $spec->{fields}{$col} = {
+            %{$self->{spec}{fields}{$col0} // {}},
+            pos=>$i,
+        };
         $i++;
     }
     my $data = [];
 
-    for my $row (@{ $self->rows_as_aohos }) {
-        next unless !$func_filter_row || $func_filter_row->($self, $row);
-        # select columns
-        for (keys %$row) {
+    for my $row0 (@{ $self->rows_as_aohos }) {
+        next unless !$func_filter_row || $func_filter_row->($self, $row0);
 
+        # select columns
+        my $row;
+        if ($_as eq 'aoaos') {
+            $row = [];
+            for my $i (0..$#{$cols}) {
+                $row->[$i] = $row0->{$cols->[$i]};
+            }
+        } else {
+            $row = {};
+            for my $i (0..$#{$cols}) {
+                $row->{$cols->[$i]} = $row0->{$cols->[$i]};
+            }
         }
+
         push @$data, $row;
+    }
+
+    if ($_as eq 'aoaos') {
+        require TableData::Object::aoaos;
+        return TableData::Object::aoaos->new($data, $spec);
+    } else {
+        require TableData::Object::aohos;
+        return TableData::Object::aohos->new($data, $spec);
     }
 }
 
