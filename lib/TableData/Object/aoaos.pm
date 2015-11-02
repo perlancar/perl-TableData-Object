@@ -63,9 +63,25 @@ sub sort_rows {
     __PACKAGE__->new(\@aoaos, $self->{spec});
 }
 
-sub rows {
+sub rows_as_aoaos {
     my $self = shift;
     $self->{data};
+}
+
+sub rows_as_aohos {
+    my $self = shift;
+    my $data = $self->{data};
+
+    my $cols = $self->{cols_by_idx};
+    my $rows = [];
+    for my $aos (@{$self->{data}}) {
+        my $row = {};
+        for my $i (0..$#{$cols}) {
+            $row->{$cols->[$i]} = $aos->[$i];
+        }
+        push @$rows, $row;
+    }
+    $rows;
 }
 
 1;

@@ -43,15 +43,14 @@ sub sort_rows {
     __PACKAGE__->new(\@aos);
 }
 
-sub rows {
+sub rows_as_aoaos {
     my $self = shift;
-    $self->{data};
+    [map {[$_]} @{ $self->{data} }];
 }
 
-sub select {
-    my ($self, $cols, $func_filter_row) = @_;
-
-    $self->_select();
+sub rows_as_aohos {
+    my $self = shift;
+    [map {{elem=>$_}} @{ $self->{data} }];
 }
 
 1;
