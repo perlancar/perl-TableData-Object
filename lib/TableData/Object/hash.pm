@@ -27,13 +27,13 @@ sub row_count {
 sub rows_as_aoaos {
     my $self = shift;
     my $data = $self->{data};
-    [map {[$_, $data->{$_}]} keys %$data];
+    [map {[$_, $data->{$_}]} sort keys %$data];
 }
 
 sub rows_as_aohos {
     my $self = shift;
     my $data = $self->{data};
-    [map {{key=>$_, value=>$data->{$_}}} keys %$data];
+    [map {{key=>$_, value=>$data->{$_}}} sort keys %$data];
 }
 
 1;

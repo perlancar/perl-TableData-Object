@@ -66,22 +66,24 @@ sub col_count {
 }
 
 sub _select {
-    my ($self, $_as, $cols, $func_filter_row, $sorts) = @_;
+    my ($self, $_as, $cols0, $func_filter_row, $sorts) = @_;
 
     # determine result's columns & spec
     my $spec = {fields=>{}};
     my $i = 0;
-    my %seen_cols;
-    for my $col0 (@$cols) {
+    my %newcols_to_origcols;
+    my @newcols;
+    for my $col0 (@$cols0) {
         die "Column '$col0' does not exist" unless $self->col_exists($col0);
 
         my $col = $col0;
         my $j = 1;
-        while ($seen_cols{$col}) {
+        while (defined $newcols_to_origcols{$col}) {
             $j++;
             $col = "${col0}_$j";
         }
-        $seen_cols{$col} = 1;
+        $newcols_to_origcols{$col} = $col0;
+        push @newcols, $col;
 
         $spec->{fields}{$col} = {
             %{$self->{spec}{fields}{$col0} // {}},
@@ -107,7 +109,7 @@ sub _select {
             my ($reverse, $col) = $sortcol =~ /\A(-?)(.+)/
                 or die "Invalid sort column specification '$sortcol'";
             next if defined $col_is_numeric{$col};
-            my $sch = $spec->{fields}{$col}{schema};
+            my $sch = $self->{spec}{fields}{$col}{schema};
             if ($sch) {
                 require Data::Sah::Util::Type;
                 $col_is_numeric{$col} = Data::Sah::Util::Type::is_numeric($sch);
@@ -140,13 +142,14 @@ sub _select {
             my $row;
             if ($_as eq 'aoaos') {
                 $row = [];
-                for my $i (0..$#{$cols}) {
-                    $row->[$i] = $row0->{$cols->[$i]};
+                for my $i (0..$#{$cols0}) {
+                    $row->[$i] = $row0->{$cols0->[$i]};
                 }
             } else {
                 $row = {};
-                for my $i (0..$#{$cols}) {
-                    $row->{$cols->[$i]} = $row0->{$cols->[$i]};
+                for my $i (0..$#newcols) {
+                    $row->{$newcols[$i]} =
+                        $row0->{$newcols_to_origcols{$newcols[$i]}};
                 }
             }
             push @$rows2, $row;
