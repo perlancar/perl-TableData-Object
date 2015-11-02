@@ -1,5 +1,21 @@
 Revision history for TableData-Object
 
+0.05    2015-11-02 (PERLANCAR)
+
+	- Add methods: rows_as_aoaos(), rows_as_aohos(), select_as_aoaos(),
+          select_as_aohos().
+
+        - [ux] If an array does not fit as aoaos or aohos, it will be assumed as
+           aos. (e.g. array of DateTime object, etc).
+
+	- [Incompatible change] Remove sort_rows(), the functionality is now
+	  incorporated into select_as_aoaos/select_as_aohos.
+
+	- Add documentation.
+
+	- Bug fixes.
+
+
 0.04    2015-10-29 (PERLANCAR)
 
 	- [Bugfix] Forgot to update package name.
