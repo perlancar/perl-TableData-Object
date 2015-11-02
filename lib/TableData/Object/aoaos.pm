@@ -43,26 +43,6 @@ sub row_count {
     scalar @{ $self->{data} };
 }
 
-sub sort_rows {
-    my ($self, @sortcols) = @_;
-    return $self unless @sortcols;
-
-    my $data = $self->{data};
-
-    my @aoaos = sort {
-        for my $sortcol (@sortcols) {
-            my ($reverse, $col) = $sortcol =~ /\A(-?)(.+)/;
-            my $idx = $self->col_idx($col);
-            die "Unknown sort column '$col'" unless defined($idx);
-            my $cmp = ($reverse ? -1:1) * ($a->[$idx] cmp $b->[$idx]);
-            return $cmp if $cmp;
-        }
-        0;
-    } @$data;
-
-    __PACKAGE__->new(\@aoaos, $self->{spec});
-}
-
 sub rows_as_aoaos {
     my $self = shift;
     $self->{data};

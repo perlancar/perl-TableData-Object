@@ -24,36 +24,6 @@ sub row_count {
     scalar keys %{ $self->{data} };
 }
 
-sub sort_rows {
-    my ($self, @sortcols) = @_;
-    return $self unless @sortcols;
-
-    my $data = $self->{data};
-
-    my @aoaos = sort {
-        for my $sortcol (@sortcols) {
-            my ($reverse, $col) = $sortcol =~ /\A(-?)(.+)/;
-            my $idx = $self->col_idx($col);
-            die "Unknown sort column '$col'" unless defined($idx);
-            my $cmp = ($reverse ? -1:1) * ($a->[$idx] cmp $b->[$idx]);
-            return $cmp if $cmp;
-        }
-        0;
-    } map {[$_, $data->{$_}]} keys %$data;
-
-    require TableData::Object::aoaos;
-    TableData::Object::aoaos->new(
-        data => \@aoaos,
-        spec => {
-            fields => {
-                key   => {pos=>0},
-                value => {pos=>1},
-            },
-            pk => 'key',
-        },
-    );
-}
-
 sub rows_as_aoaos {
     my $self = shift;
     my $data = $self->{data};
