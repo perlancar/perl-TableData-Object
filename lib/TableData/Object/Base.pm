@@ -69,27 +69,35 @@ sub _select {
     my ($self, $_as, $cols0, $func_filter_row, $sorts) = @_;
 
     # determine result's columns & spec
-    my $spec = {fields=>{}};
-    my $i = 0;
+    my $spec;
     my %newcols_to_origcols;
     my @newcols;
-    for my $col0 (@$cols0) {
-        die "Column '$col0' does not exist" unless $self->col_exists($col0);
+    if ($cols0) {
+        $spec = {fields=>{}};
+        my $i = 0;
+        for my $col0 (@$cols0) {
+            die "Column '$col0' does not exist" unless $self->col_exists($col0);
 
-        my $col = $col0;
-        my $j = 1;
-        while (defined $newcols_to_origcols{$col}) {
-            $j++;
-            $col = "${col0}_$j";
+            my $col = $col0;
+            my $j = 1;
+            while (defined $newcols_to_origcols{$col}) {
+                $j++;
+                $col = "${col0}_$j";
+            }
+            $newcols_to_origcols{$col} = $col0;
+            push @newcols, $col;
+
+            $spec->{fields}{$col} = {
+                %{$self->{spec}{fields}{$col0} // {}},
+                pos=>$i,
+            };
+            $i++;
         }
-        $newcols_to_origcols{$col} = $col0;
-        push @newcols, $col;
-
-        $spec->{fields}{$col} = {
-            %{$self->{spec}{fields}{$col0} // {}},
-            pos=>$i,
-        };
-        $i++;
+    } else {
+        $spec = $self->{spec};
+        $cols0 = $self->{cols_by_idx};
+        @newcols = @{ $self->{cols_by_idx} };
+        for (@newcols) { $newcols_to_origcols{$_} = $_ }
     }
 
     my $rows = [];
@@ -247,26 +255,26 @@ Return rows as array of hash-of-scalars.
 
 See also: C<rows_as_aoaos()>.
 
-=head2 $td->select_as_aoaos(\@cols[ , $func_filter_row[ , \@sorts] ]) => aoaos
+=head2 $td->select_as_aoaos([ \@cols[ , $func_filter_row[ , \@sorts] ] ]) => aoaos
 
 Like C<rows_as_aoaos()>, but allow selecting columns, filtering rows, sorting.
 
-C<@cols> is a list of column specification to return in the resultset. Currently
-only column names are allowed. You can mention the same column name more than
-once.
+C<\@cols> is an optional array of column specification to return in the
+resultset. Currently only column names are allowed. You can mention the same
+column name more than once.
 
 C<$func_filter_row> is an optional coderef that will be passed C<< ($td,
 $row_as_hos) >> and should return true/false depending on whether the row should
 be included in the resultset. If unspecified, all rows will be returned.
 
-C<\@sorts> is an optional list of column specification for sorting. For each
+C<\@sorts> is an optional array of column specification for sorting. For each
 specification, you can use COLUMN_NAME or -COLUMN_NAME (note the dash prefix) to
 express descending order instead of the default ascending. If unspecified, no
 sorting will be performed.
 
 See also: C<select_as_aohos()>.
 
-=head2 $td->select_as_aohos($cols[ , $func_filter_row[ , \@sorts ] ]) => aohos
+=head2 $td->select_as_aohos([ \@cols[ , $func_filter_row[ , \@sorts ] ] ]) => aohos
 
 Like C<select_as_aoaos()>, but will return aohos (array of hashes-of-scalars)
 instead of aoaos (array of arrays-of-scalars).

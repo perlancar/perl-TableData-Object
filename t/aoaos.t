@@ -55,6 +55,9 @@ subtest select => sub {
 
     dies_ok { $td->select_as_aoaos(["foo"]) } "unknown column -> dies";
 
+    $td2 = $td->select_as_aoaos();
+    is_deeply($td2->rows_as_aoaos, [[1,2],[5,6],[3,4]]);
+
     $td2 = $td->select_as_aoaos(["column1","column0","column1"]);
     is_deeply($td2->rows_as_aoaos, [[2,1,2],[6,5,6],[4,3,4]]);
 
