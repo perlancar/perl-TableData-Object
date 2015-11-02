@@ -232,20 +232,6 @@ unknown.
 
 See also: C<col_name()>.
 
-=head2 $td->sort_rows(@sortcols) => obj
-
-Return a new table object with rows sorted according to C<@sortcols>, where
-C<@sortcols> is a list of column names (e.g.: C<foo>) with optional dash prefix
-(e.g. C<-foo>) to signify descending order.
-
-Example:
-
- # sort employees from oldest to youngest, then by name
- $td->sort_rows("-age", "name")
-
-If you have a C<::hash> or C<::aos> object, an C<::aoaos> object will be
-returned instead. Otherwise, object of the same type will be returned.
-
 =head2 $td->rows_as_aoaos() => aoaos
 
 Return rows as array of array-of-scalars.
@@ -258,20 +244,28 @@ Return rows as array of hash-of-scalars.
 
 See also: C<rows_as_aoaos()>.
 
-=head2 $td->select_as_aoaos($cols[ , $func_filter_row ]) => aoaos
+=head2 $td->select_as_aoaos(\@cols[ , $func_filter_row[ , \@sorts] ]) => aoaos
 
-Like C<rows_as_aoaos()>, but allow selecting columns and filtering rows.
-C<$func_filter_row> is a coderef that will be passed C<< ($td, $row_as_hos) >>
-and should return true/false depending on whether the row should be included in
-the resultset.
+Like C<rows_as_aoaos()>, but allow selecting columns, filtering rows, sorting.
+
+C<@cols> is a list of column specification to return in the resultset. Currently
+only column names are allowed. You can mention the same column name more than
+once.
+
+C<$func_filter_row> is an optional coderef that will be passed C<< ($td,
+$row_as_hos) >> and should return true/false depending on whether the row should
+be included in the resultset. If unspecified, all rows will be returned.
+
+C<\@sorts> is an optional list of column specification for sorting. For each
+specification, you can use COLUMN_NAME or -COLUMN_NAME (note the dash prefix) to
+express descending order instead of the default ascending. If unspecified, no
+sorting will be performed.
 
 See also: C<select_as_aohos()>.
 
-=head2 $td->rows_as_aohos($cols[ , $func_filter_row ]) => aohos
+=head2 $td->select_as_aohos($cols[ , $func_filter_row[ , \@sorts ] ]) => aohos
 
-Like C<rows_as_aohos()>, but allow selecting columns and filtering rows.
-C<$func_filter_row> is a coderef that will be passed C<< ($td, $row_as_hos) >>
-and should return true/false depending on whether the row should be included in
-the resultset.
+Like C<select_as_aoaos()>, but will return aohos (array of hashes-of-scalars)
+instead of aoaos (array of arrays-of-scalars).
 
 See also: C<select_as_aoaos()>.
