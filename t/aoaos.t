@@ -72,5 +72,15 @@ subtest select => sub {
     is_deeply($td2->rows_as_aoaos, [[6],[4]]);
 };
 
+{
+    my $td = table([[1,2],[2,2,3],[2,2,3]]);
+    subtest const_col_names => sub {
+        is_deeply($td->const_col_names, ["column1"]);
+    };
+    subtest const_col_idxs => sub {
+        is_deeply($td->const_col_idxs, [1]);
+    };
+}
+
 DONE_TESTING:
 done_testing;

@@ -68,6 +68,30 @@ sub rows_as_aohos {
     $self->{data};
 }
 
+sub const_col_names {
+    my $self = shift;
+
+    my $res = [];
+  COL:
+    for my $col (sort keys %{$self->{cols_by_name}}) {
+        my $i = -1;
+        my $val;
+        for my $row (@{$self->{data}}) {
+            next COL unless exists $row->{$col};
+            $i++;
+            if ($i == 0) {
+                $val = $row->{$col};
+            } else {
+                next COL unless
+                    (!defined($val) && !defined($row->{$col})) ||
+                    ( defined($val) &&  defined($row->{$col}) && $val eq $row->{$col});
+            }
+        }
+        push @$res, $col;
+    }
+    $res;
+}
+
 1;
 # ABSTRACT: Manipulate array of hashes-of-scalars via table object
 
@@ -101,4 +125,11 @@ The table will have columns from all the hashes' keys.
 
 =head1 METHODS
 
-See L<TableData::Object::Base>.
+See L<TableData::Object::Base>. Additional methods include:
+
+=head2 const_col_names => arrayref
+
+Return names of columns that exist in all hashes with the same value. Example:
+
+ # data: [{a=>1, b=>2}, {a=>2, b=>2, c=>3}, {a=>1, b=>2, c=>3}]
+ $td->const_col_names; # ['b'], 'a' has a different value in 2nd hash, 'c' doesn't exist in all hashes
