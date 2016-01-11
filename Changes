@@ -1,5 +1,11 @@
 Revision history for TableData-Object
 
+0.07    2016-01-11 (PERLANCAR)
+
+	- Add const_col_names for aohos & aoaos (and const_col_idxs too for
+	  aoaos).
+
+
 0.06    2015-11-02 (PERLANCAR)
 
 	- [ux] select_*(): Allow cols to be optional.

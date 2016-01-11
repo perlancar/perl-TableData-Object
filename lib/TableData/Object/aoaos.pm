@@ -79,7 +79,6 @@ sub _const_col {
             if ($i == 0) {
                 $val = $row->[$colidx];
             } else {
-                use DD; print "  "; dd {val=>$val, row=>$row};
                 next COL unless
                     (!defined($val) && !defined($row->[$colidx])) ||
                     ( defined($val) &&  defined($row->[$colidx]) && $val eq $row->[$colidx]);
