@@ -62,5 +62,25 @@ subtest select => sub {
     is_deeply($td2->rows_as_aoaos, [[10],[4],[2]]);
 };
 
+subtest uniq_col_names => sub {
+    is_deeply([TableData::Object::aos->new([])->uniq_col_names], ['elem']);
+    is_deeply([table([1])->uniq_col_names], ['elem']);
+    is_deeply([table([undef])->const_col_names], ['elem'], 'undef');
+
+    is_deeply([table([1,2])->uniq_col_names], ['elem']);
+    is_deeply([table([1,undef])->uniq_col_names], [], 'has undef');
+    is_deeply([table([1,1])->uniq_col_names], [], 'has duplicate values');
+};
+
+subtest const_col_names => sub {
+    is_deeply([TableData::Object::aos->new([])->const_col_names], ['elem']);
+    is_deeply([table([1])->const_col_names], ['elem']);
+    is_deeply([table([undef])->const_col_names], ['elem'], 'undef');
+
+    is_deeply([table([1,1])->const_col_names], ['elem']);
+    is_deeply([table([1,undef])->const_col_names], [], 'has different values 1');
+    is_deeply([table([1,2])->const_col_names], [], 'has different values 2');
+};
+
 DONE_TESTING:
 done_testing;

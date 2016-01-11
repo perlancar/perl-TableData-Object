@@ -1,5 +1,14 @@
 Revision history for TableData-Object
 
+0.08    2016-01-11 (PERLANCAR)
+
+	- [Removed feature] Remove const_col_idxs().
+
+        - Move const_col_names() to Base so all forms support it.
+
+        - Add uniq_col_names().
+
+
 0.07    2016-01-11 (PERLANCAR)
 
 	- Add const_col_names for aohos & aoaos (and const_col_idxs too for

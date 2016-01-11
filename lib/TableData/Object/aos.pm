@@ -33,6 +33,39 @@ sub rows_as_aohos {
     [map {{elem=>$_}} @{ $self->{data} }];
 }
 
+sub uniq_col_names {
+    my $self = shift;
+    my %mem;
+    for (@{$self->{data}}) {
+        return () unless defined;
+        return () if $mem{$_}++;
+    }
+    ('elem');
+}
+
+sub const_col_names {
+    my $self = shift;
+
+    my $i = -1;
+    my $val;
+    my $val_undef;
+    for (@{$self->{data}}) {
+        $i++;
+        if ($i == 0) {
+            $val = $_;
+            $val_undef = 1 unless defined $val;
+        } else {
+            if ($val_undef) {
+                return () if defined;
+            } else {
+                return () unless defined;
+                return () unless $val eq $_;
+            }
+        }
+    }
+    ('elem');
+}
+
 1;
 # ABSTRACT: Manipulate array of scalars via table object
 

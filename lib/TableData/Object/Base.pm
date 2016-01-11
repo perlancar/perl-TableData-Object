@@ -185,6 +185,10 @@ sub select_as_aohos {
     $self->_select('aohos', $cols, $func_filter_row, $sorts);
 }
 
+sub uniq_col_names { die "Must be implemented by subclass" }
+
+sub const_col_names { die "Must be implemented by subclass" }
+
 1;
 # ABSTRACT: Base class for TableData::Object::*
 
@@ -280,3 +284,32 @@ Like C<select_as_aoaos()>, but will return aohos (array of hashes-of-scalars)
 instead of aoaos (array of arrays-of-scalars).
 
 See also: C<select_as_aoaos()>.
+
+=head2 $td->uniq_col_names => list
+
+Return a list of names of columns that are unique. A unique column exists in all
+rows and has a defined and unique value across all rows. Example:
+
+ my $td = table([
+     {a=>1, b=>2, c=>undef, d=>1},
+     {      b=>2, c=>3,     d=>2},
+     {a=>1, b=>3, c=>4,     d=>3},
+ ]); # -> ('d')
+
+In the above example, C<a> does not exist in the second hash, <b> is not unique,
+and C<c> has an undef value in the the first hash.
+
+=head2 $td->const_col_names => list
+
+Return a list of names of columns that are constant. A constant column ehas a
+defined single value for all rows (a column that contains all undef's counts).
+Example:
+
+ my $td = table([
+     {a=>1, b=>2, c=>undef, d=>2},
+     {      b=>2, c=>undef, d=>2},
+     {a=>2, b=>3, c=>undef, d=>2},
+ ]); # -> ('c', 'd')
+
+In the above example, C<a> does not exist in the second hash, <b> has two
+different values.

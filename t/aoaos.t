@@ -72,15 +72,23 @@ subtest select => sub {
     is_deeply($td2->rows_as_aoaos, [[6],[4]]);
 };
 
-{
-    my $td = table([[1,2],[2,2,3],[2,2,3]]);
-    subtest const_col_names => sub {
-        is_deeply($td->const_col_names, ["column1"]);
-    };
-    subtest const_col_idxs => sub {
-        is_deeply($td->const_col_idxs, [1]);
-    };
-}
+subtest uniq_col_names => sub {
+    is_deeply([TableData::Object::aoaos->new([])->uniq_col_names], []);
+    is_deeply([table([
+        [1,1,undef],
+        [2,2,undef,3],
+        [2,3,undef,4],
+    ])->uniq_col_names], ["column1"]);
+};
+
+subtest const_col_names => sub {
+    is_deeply([TableData::Object::aoaos->new([])->const_col_names], []);
+    is_deeply([table([
+        [1,2,undef],
+        [2,2,undef,3],
+        [2,2,undef,3],
+    ])->const_col_names], ["column1","column2"]);
+};
 
 DONE_TESTING:
 done_testing;

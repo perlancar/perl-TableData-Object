@@ -66,5 +66,25 @@ subtest select => sub {
     is_deeply($td2->rows_as_aoaos, [[3,"c"],[1,"a"]]);
 };
 
+subtest uniq_col_names => sub {
+    is_deeply([table({})->uniq_col_names], ['key','value']);
+    is_deeply([table({a=>1})->uniq_col_names], ['key','value']);
+    is_deeply([table({a=>undef})->uniq_col_names], ['key'], 'undef');
+
+    is_deeply([table({a=>1, b=>2})->uniq_col_names], ['key','value']);
+    is_deeply([table({a=>1, b=>undef})->uniq_col_names], ['key'], 'value has undef');
+    is_deeply([table({a=>1, b=>1})->uniq_col_names], ['key'], 'value has duplicates');
+};
+
+subtest const_col_names => sub {
+    is_deeply([table({})->const_col_names], ['value']);
+    is_deeply([table({a=>1})->const_col_names], ['value']);
+    is_deeply([table({a=>undef})->const_col_names], ['value'], 'undef');
+
+    is_deeply([table({a=>1, b=>1})->const_col_names], ['value']);
+    is_deeply([table({a=>1, b=>undef})->const_col_names], [], 'value has undef');
+    is_deeply([table({a=>1, b=>2})->const_col_names], [], 'different values');
+};
+
 DONE_TESTING:
 done_testing;

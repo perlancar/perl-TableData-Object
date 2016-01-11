@@ -36,6 +36,43 @@ sub rows_as_aohos {
     [map {{key=>$_, value=>$data->{$_}}} sort keys %$data];
 }
 
+sub uniq_col_names {
+    my $self = shift;
+
+    my @res = ('key'); # by definition, hash key is unique
+    my %mem;
+    for (values %{$self->{data}}) {
+        return @res unless defined;
+        return @res if $mem{$_}++;
+    }
+    push @res, 'value';
+    @res;
+}
+
+sub const_col_names {
+    my $self = shift;
+
+    # by definition, hash key is not constant
+    my $i = -1;
+    my $val;
+    my $val_undef;
+    for (values %{$self->{data}}) {
+        $i++;
+        if ($i == 0) {
+            $val = $_;
+            $val_undef = 1 unless defined $val;
+        } else {
+            if ($val_undef) {
+                return () if defined;
+            } else {
+                return () unless defined;
+                return () unless $val eq $_;
+            }
+        }
+    }
+    ('value');
+}
+
 1;
 # ABSTRACT: Manipulate hash via table object
 

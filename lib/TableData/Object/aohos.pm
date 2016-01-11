@@ -68,28 +68,49 @@ sub rows_as_aohos {
     $self->{data};
 }
 
+sub uniq_col_names {
+    my $self = shift;
+
+    my @res;
+  COL:
+    for my $col (sort keys %{$self->{cols_by_name}}) {
+        my %mem;
+        for my $row (@{$self->{data}}) {
+            next COL unless defined $row->{$col};
+            next COL if $mem{ $row->{$col} }++;
+        }
+        push @res, $col;
+    }
+    @res;
+}
+
 sub const_col_names {
     my $self = shift;
 
-    my $res = [];
+    my @res;
   COL:
     for my $col (sort keys %{$self->{cols_by_name}}) {
         my $i = -1;
         my $val;
+        my $val_undef;
         for my $row (@{$self->{data}}) {
             next COL unless exists $row->{$col};
             $i++;
             if ($i == 0) {
                 $val = $row->{$col};
+                $val_undef = 1 unless defined $val;
             } else {
-                next COL unless
-                    (!defined($val) && !defined($row->{$col})) ||
-                    ( defined($val) &&  defined($row->{$col}) && $val eq $row->{$col});
+                if ($val_undef) {
+                    next COL if defined $row->{$col};
+                } else {
+                    next COL unless defined $row->{$col};
+                    next COL unless $val eq $row->{$col};
+                }
             }
         }
-        push @$res, $col;
+        push @res, $col;
     }
-    $res;
+    @res;
 }
 
 1;

@@ -64,48 +64,54 @@ sub rows_as_aohos {
     $rows;
 }
 
-sub _const_col {
+sub uniq_col_names {
     my ($self, $which) = @_;
 
-    my $res = [];
+    my @res;
   COL:
-    for my $colname (keys %{$self->{cols_by_name}}) {
+    for my $colname (sort keys %{$self->{cols_by_name}}) {
+        my $colidx = $self->{cols_by_name}{$colname};
+        my %mem;
+        for my $row (@{$self->{data}}) {
+            next COL unless $#{$row} >= $colidx;
+            next COL unless defined $row->[$colidx];
+            next COL if $mem{ $row->[$colidx] }++;
+        }
+        push @res, $colname;
+    }
+
+    @res;
+}
+
+sub const_col_names {
+    my ($self, $which) = @_;
+
+    my @res;
+  COL:
+    for my $colname (sort keys %{$self->{cols_by_name}}) {
         my $colidx = $self->{cols_by_name}{$colname};
         my $i = -1;
         my $val;
+        my $val_undef;
         for my $row (@{$self->{data}}) {
             next COL unless $#{$row} >= $colidx;
             $i++;
             if ($i == 0) {
                 $val = $row->[$colidx];
+                $val_undef = 1 unless defined $val;
             } else {
-                next COL unless
-                    (!defined($val) && !defined($row->[$colidx])) ||
-                    ( defined($val) &&  defined($row->[$colidx]) && $val eq $row->[$colidx]);
+                if ($val_undef) {
+                    next COL if defined;
+                } else {
+                    next COL unless defined $row->[$colidx];
+                    next COL unless $val eq $row->[$colidx];
+                }
             }
         }
-        if ($which eq 'name') {
-            push @$res, $colname;
-        } else {
-            push @$res, $colidx;
-        }
+        push @res, $colname;
     }
 
-    if ($which eq 'name') {
-        return [sort {$a cmp $b} @$res];
-    } else {
-        return [sort {$a <=> $b} @$res];
-    }
-}
-
-sub const_col_names {
-    my $self = shift;
-    $self->_const_col('name');
-}
-
-sub const_col_idxs {
-    my $self = shift;
-    $self->_const_col('idx');
+    @res;
 }
 
 1;
@@ -142,19 +148,4 @@ array-of-scalars will determine the number of columns.
 
 =head1 METHODS
 
-See L<TableData::Object::Base>. Additional methods include:
-
-=head2 const_col_names => arrayref
-
-Return names of columns that exist in all arrays with the same value. Example:
-
- # data: [[1,2], [2,2,3], [1,2,3]]
- $td->const_col_names; # ['column1'], 'column0' has a different value in 2nd array, 'column2' doesn't exist in all rows
-
-=head2 const_col_idxs => arrayref
-
-Just like C<const_col_names> except that it will return column indexes instead
-of names:
-
- # data: [[1,2], [2,2,3], [1,2,3]]
- $td->const_col_idxs; # [1]
+See L<TableData::Object::Base>.
