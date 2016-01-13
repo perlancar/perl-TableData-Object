@@ -113,6 +113,94 @@ sub const_col_names {
     @res;
 }
 
+sub del_col {
+    my ($self, $name_or_idx) = @_;
+
+    my $idx = $self->col_idx($name_or_idx);
+    return undef unless defined $idx;
+
+    my $name = $self->{cols_by_idx}[$idx];
+
+    for my $row (@{$self->{data}}) {
+        delete $row->{$name};
+    }
+
+    # adjust cols_by_{name,idx}
+    for my $i (reverse 0..$#{$self->{cols_by_idx}}) {
+        my $name = $self->{cols_by_idx}[$i];
+        if ($i > $idx) {
+            $self->{cols_by_name}{$name}--;
+        } elsif ($i == $idx) {
+            splice @{ $self->{cols_by_idx} }, $i, 1;
+            delete $self->{cols_by_name}{$name};
+        }
+    }
+
+    # adjust spec
+    if ($self->{spec}) {
+        my $ff = $self->{spec}{fields};
+        for my $name (keys %$ff) {
+            if (!exists $self->{cols_by_name}{$name}) {
+                delete $ff->{$name};
+            } else {
+                $ff->{$name}{pos} = $self->{cols_by_name}{$name};
+            }
+        }
+    }
+
+    $name;
+}
+
+sub rename_col {
+    my ($self, $old_name_or_idx, $new_name) = @_;
+
+    my $idx = $self->col_idx($old_name_or_idx);
+    die "Unknown column '$old_name_or_idx'" unless defined($idx);
+    my $old_name = $self->{cols_by_idx}[$idx];
+    die "Please specify new column name" unless length($new_name);
+    return if $new_name eq $old_name;
+    die "New column name must not be a number" if $new_name =~ /\A\d+\z/;
+
+    # adjust data
+    for my $row (@{$self->{data}}) {
+        $row->{$new_name} = delete($row->{$old_name});
+    }
+
+    $self->{cols_by_idx}[$idx] = $new_name;
+    $self->{cols_by_name}{$new_name} = delete($self->{cols_by_name}{$old_name});
+    if ($self->{spec}) {
+        my $ff = $self->{spec}{fields};
+        $ff->{$new_name} = delete($ff->{$old_name});
+    }
+}
+
+sub switch_cols {
+    my ($self, $name_or_idx1, $name_or_idx2) = @_;
+
+    my $idx1 = $self->col_idx($name_or_idx1);
+    die "Unknown first column '$name_or_idx1'" unless defined($idx1);
+    my $idx2 = $self->col_idx($name_or_idx2);
+    die "Unknown second column '$name_or_idx2'" unless defined($idx2);
+    return if $idx1 == $idx2;
+
+    my $name1 = $self->col_name($name_or_idx1);
+    my $name2 = $self->col_name($name_or_idx2);
+
+    # adjust data
+    for my $row (@{$self->{data}}) {
+        ($row->{$name1}, $row->{$name2}) = ($row->{$name2}, $row->{$name1});
+    }
+
+    ($self->{cols_by_idx}[$idx1], $self->{cols_by_idx}[$idx2]) =
+        ($self->{cols_by_idx}[$idx2], $self->{cols_by_idx}[$idx1]);
+    ($self->{cols_by_name}{$name1}, $self->{cols_by_name}{$name2}) =
+        ($self->{cols_by_name}{$name2}, $self->{cols_by_name}{$name1});
+    if ($self->{spec}) {
+        my $ff = $self->{spec}{fields};
+        ($ff->{$name1}, $ff->{$name2}) = ($ff->{$name2}, $ff->{$name1});
+    }
+}
+
 1;
 # ABSTRACT: Manipulate array of hashes-of-scalars via table object
 
@@ -132,11 +220,6 @@ or:
 
  my $td = TableData::Object::aohos->new([{foo=>10, bar=>10}, {bar=>20, baz=>20}]);
 
-To manipulate:
-
- $td->cols_by_name; # {foo=>0, bar=>1, baz=>2}
- $td->cols_by_idx;  # ['foo', 'bar', 'baz']
-
 
 =head1 DESCRIPTION
 
@@ -146,11 +229,4 @@ The table will have columns from all the hashes' keys.
 
 =head1 METHODS
 
-See L<TableData::Object::Base>. Additional methods include:
-
-=head2 const_col_names => arrayref
-
-Return names of columns that exist in all hashes with the same value. Example:
-
- # data: [{a=>1, b=>2}, {a=>2, b=>2, c=>3}, {a=>1, b=>2, c=>3}]
- $td->const_col_names; # ['b'], 'a' has a different value in 2nd hash, 'c' doesn't exist in all hashes
+See L<TableData::Object::Base>.

@@ -82,5 +82,22 @@ subtest const_col_names => sub {
     is_deeply([table([1,2])->const_col_names], [], 'has different values 2');
 };
 
+subtest del_col => sub {
+    my $td = table([1]);
+    dies_ok { $td->del_col('elem') };
+    dies_ok { $td->del_col(0) };
+};
+
+subtest rename_col => sub {
+    my $td = table([1]);
+    dies_ok { $td->rename_col('elem','elem') };
+    dies_ok { $td->rename_col(0,0) };
+};
+
+subtest switch_cols => sub {
+    my $td = table([1]);
+    dies_ok { $td->switch_cols('elem', 'elem') };
+};
+
 DONE_TESTING:
 done_testing;

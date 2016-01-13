@@ -73,6 +73,10 @@ sub const_col_names {
     ('value');
 }
 
+sub switch_cols {
+    die "Cannot switch column in aos table";
+}
+
 1;
 # ABSTRACT: Manipulate hash via table object
 
@@ -91,11 +95,6 @@ or:
  use TableData::Object::hash;
 
  my $td = TableData::Object::hash->new({foo=>10, bar=>20, baz=>30});
-
-To manipulate:
-
- $td->cols_by_name; # {key=>0, value=>1}
- $td->cols_by_idx;  # ['key', 'value']
 
 
 =head1 DESCRIPTION

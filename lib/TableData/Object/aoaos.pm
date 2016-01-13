@@ -114,6 +114,84 @@ sub const_col_names {
     @res;
 }
 
+sub del_col {
+    my ($self, $name_or_idx) = @_;
+
+    my $idx = $self->col_idx($name_or_idx);
+    return undef unless defined $idx;
+
+    my $name = $self->{cols_by_idx}[$idx];
+
+    for my $row (@{$self->{data}}) {
+        splice @$row, $idx, 1;
+    }
+
+    # adjust cols_by_{name,idx}
+    for my $i (reverse 0..$#{$self->{cols_by_idx}}) {
+        my $name = $self->{cols_by_idx}[$i];
+        if ($i > $idx) {
+            $self->{cols_by_name}{$name}--;
+        } elsif ($i == $idx) {
+            splice @{ $self->{cols_by_idx} }, $i, 1;
+            delete $self->{cols_by_name}{$name};
+        }
+    }
+
+    # adjust spec
+    if ($self->{spec}) {
+        my $ff = $self->{spec}{fields};
+        for my $name (keys %$ff) {
+            if (!exists $self->{cols_by_name}{$name}) {
+                delete $ff->{$name};
+            } else {
+                $ff->{$name}{pos} = $self->{cols_by_name}{$name};
+            }
+        }
+    }
+
+    $name;
+}
+
+sub rename_col {
+    my ($self, $old_name_or_idx, $new_name) = @_;
+
+    my $idx = $self->col_idx($old_name_or_idx);
+    die "Unknown column '$old_name_or_idx'" unless defined($idx);
+    my $old_name = $self->{cols_by_idx}[$idx];
+    die "Please specify new column name" unless length($new_name);
+    return if $new_name eq $old_name;
+    die "New column name must not be a number" if $new_name =~ /\A\d+\z/;
+
+    $self->{cols_by_idx}[$idx] = $new_name;
+    $self->{cols_by_name}{$new_name} = delete($self->{cols_by_name}{$old_name});
+    if ($self->{spec}) {
+        my $ff = $self->{spec}{fields};
+        $ff->{$new_name} = delete($ff->{$old_name});
+    }
+}
+
+sub switch_cols {
+    my ($self, $name_or_idx1, $name_or_idx2) = @_;
+
+    my $idx1 = $self->col_idx($name_or_idx1);
+    die "Unknown first column '$name_or_idx1'" unless defined($idx1);
+    my $idx2 = $self->col_idx($name_or_idx2);
+    die "Unknown second column '$name_or_idx2'" unless defined($idx2);
+    return if $idx1 == $idx2;
+
+    my $name1 = $self->col_name($name_or_idx1);
+    my $name2 = $self->col_name($name_or_idx2);
+
+    ($self->{cols_by_idx}[$idx1], $self->{cols_by_idx}[$idx2]) =
+        ($self->{cols_by_idx}[$idx2], $self->{cols_by_idx}[$idx1]);
+    ($self->{cols_by_name}{$name1}, $self->{cols_by_name}{$name2}) =
+        ($self->{cols_by_name}{$name2}, $self->{cols_by_name}{$name1});
+    if ($self->{spec}) {
+        my $ff = $self->{spec}{fields};
+        ($ff->{$name1}, $ff->{$name2}) = ($ff->{$name2}, $ff->{$name1});
+    }
+}
+
 1;
 # ABSTRACT: Manipulate array of arrays-of-scalars via table object
 
@@ -133,17 +211,13 @@ or:
 
  my $td = TableData::Object::aoaos->new([[1,2,3], [4,5,6]]);
 
-To manipulate:
-
- $td->cols_by_name; # {column0=>0, column1=>1, column2=>2}
- $td->cols_by_idx;  # ['column0', 'column1', 'column2']
-
 
 =head1 DESCRIPTION
 
 This class lets you manipulate an array of arrays-of-scalars as a table object.
 The table will have column names C<column0>, C<column1>, and so on. The first
-array-of-scalars will determine the number of columns.
+array-of-scalars will determine the number of columns (unless if you also give
+C<spec>).
 
 
 =head1 METHODS

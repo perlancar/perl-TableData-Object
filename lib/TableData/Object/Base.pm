@@ -189,6 +189,12 @@ sub uniq_col_names { die "Must be implemented by subclass" }
 
 sub const_col_names { die "Must be implemented by subclass" }
 
+sub del_col { die "Must be implemented by subclass" }
+
+sub rename_col { die "Must be implemented by subclass" }
+
+sub switch_cols { die "Must be implemented by subclass" }
+
 1;
 # ABSTRACT: Base class for TableData::Object::*
 
@@ -313,3 +319,34 @@ Example:
 
 In the above example, C<a> does not exist in the second hash, <b> has two
 different values.
+
+=head2 $td->del_col($name_or_idx) => str
+
+Delete a single column. Will die if the underlying form does not support column
+deletion (e.g. aos and hash).
+
+Will modify data. Will also adjust column positions. And will also modify spec,
+if spec was given.
+
+Return the deleted column name.
+
+If column is unknown, will simply return undef.
+
+=head2 $td->rename_col($old_name_or_idx, $new_name)
+
+Rename a column to a new name. Will die if the underlying form does not support
+column rename (e.g. aos and hash).
+
+Die if column is unknown. Die if new column name is a number, or an existing
+column name. Will simply return if new column name is the same as old name.
+
+Might modify data (e.g. in aohos). Will modify spec, if spec was given.
+
+=head2 $td->switch_cols($name_or_idx1, $name_or_idx2)
+
+Switch two columns. Will die if the underlying form does not support column
+rename (e.g. aos and hash).
+
+Die if either column is unknown. Will simply return if both are the same column.
+
+Might modify data (e.g. in aohos). Will modify spec, if spec was given.

@@ -66,6 +66,18 @@ sub const_col_names {
     ('elem');
 }
 
+sub del_col {
+    die "Cannot delete column in aos table";
+}
+
+sub rename_col {
+    die "Cannot rename column in aos table";
+}
+
+sub switch_cols {
+    die "Cannot switch column in aos table";
+}
+
 1;
 # ABSTRACT: Manipulate array of scalars via table object
 
@@ -84,11 +96,6 @@ or:
  use TableData::Object::aos;
 
  my $td = TableData::Object::aos->new([1,2,3]);
-
-To manipulate:
-
- $td->cols_by_name; # {elem=>0}
- $td->cols_by_idx;  # ['elem']
 
 
 =head1 DESCRIPTION
