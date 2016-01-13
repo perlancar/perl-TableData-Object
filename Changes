@@ -1,5 +1,10 @@
 Revision history for TableData-Object
 
+0.09    2016-01-13 (PERLANCAR)
+
+	- Add del_col(), rename_col(), switch_cols().
+
+
 0.08    2016-01-11 (PERLANCAR)
 
 	- [Removed feature] Remove const_col_idxs().
