@@ -221,5 +221,17 @@ subtest add_col => sub {
     is_deeply($td->{data}[1], {column0=>4, foo=>undef, column1=>5, column2=>6, bar=>undef});
 };
 
+subtest set_col_val => sub {
+    my $td = table(
+        [{column0=>1,column1=>2,column2=>3},
+         {column0=>4,column1=>5,column2=>6},],
+    );
+    dies_ok { $td->set_col_val('foo', sub { 1 }) } "unknown column -> dies";
+
+    $td->set_col_val('column1', sub { my %args = @_; $args{value}*2 });
+    is_deeply($td->{data}[0], {column0=>1,column1=>4,column2=>3});
+    is_deeply($td->{data}[1], {column0=>4,column1=>10,column2=>6});
+};
+
 DONE_TESTING:
 done_testing;

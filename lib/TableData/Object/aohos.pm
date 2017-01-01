@@ -234,6 +234,26 @@ sub add_col {
     }
 }
 
+sub set_col_val {
+    my ($self, $name_or_idx, $value_sub) = @_;
+
+    my $col_name = $self->col_name($name_or_idx);
+    my $col_idx  = $self->col_idx($name_or_idx);
+
+    die "Column '$name_or_idx' does not exist" unless defined $col_name;
+
+    for my $i (0..$#{ $self->{data} }) {
+        my $row = $self->{data}[$i];
+        $row->{$col_name} = $value_sub->(
+            table    => $self,
+            row_idx  => $i,
+            col_name => $col_name,
+            col_idx  => $col_idx,
+            value    => $row->{$col_name},
+        );
+    }
+}
+
 1;
 # ABSTRACT: Manipulate array of hashes-of-scalars via table object
 

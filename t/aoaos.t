@@ -215,5 +215,14 @@ subtest add_col => sub {
     is_deeply($td->{data}[1], [4,undef,5,6,undef]);
 };
 
+subtest set_col_val => sub {
+    my $td = table([[1,2,3],[4,5,6]]);
+    dies_ok { $td->set_col_val('foo', sub { 1 }) } "unknown column -> dies";
+
+    $td->set_col_val('column1', sub { my %args = @_; $args{value}*2 });
+    is_deeply($td->{data}[0], [1,4,3]);
+    is_deeply($td->{data}[1], [4,10,6]);
+};
+
 DONE_TESTING:
 done_testing;

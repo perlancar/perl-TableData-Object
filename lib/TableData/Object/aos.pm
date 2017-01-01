@@ -82,6 +82,26 @@ sub add_col {
     die "Cannot add_col in aos table";
 }
 
+sub set_col_val {
+    my ($self, $name_or_idx, $value_sub) = @_;
+
+    my $col_name = $self->col_name($name_or_idx);
+    my $col_idx  = $self->col_idx($name_or_idx);
+
+    die "Column '$name_or_idx' does not exist" unless defined $col_name;
+
+    my $hash = $self->{data};
+    for my $i (0..$#{ $self->{data} }) {
+        $self->{data}[$i] = $value_sub->(
+            table    => $self,
+            row_idx  => $i,
+            col_name => $col_name,
+            col_idx  => $col_idx,
+            value    => $self->{data}[$i],
+        );
+    }
+}
+
 1;
 # ABSTRACT: Manipulate array of scalars via table object
 

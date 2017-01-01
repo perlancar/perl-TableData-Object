@@ -108,5 +108,16 @@ subtest switch_cols => sub {
     dies_ok { $td->switch_cols('value', 'key') };
 };
 
+subtest set_col_val => sub {
+    my $td = table({a=>1, b=>2, c=>3});
+    dies_ok { $td->set_col_val('foo', sub { 1 }) } "unknown column -> dies";
+
+    $td->set_col_val('value', sub { 40 });
+    is_deeply($td->{data}, {a=>40, b=>40, c=>40});
+
+    $td->set_col_val('key', sub { my %args = @_; "$args{row_name}2" });
+    is_deeply($td->{data}, {a2=>40, b2=>40, c2=>40});
+};
+
 DONE_TESTING:
 done_testing;

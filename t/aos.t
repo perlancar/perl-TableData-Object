@@ -99,5 +99,13 @@ subtest switch_cols => sub {
     dies_ok { $td->switch_cols('elem', 'elem') };
 };
 
+subtest set_col_val => sub {
+    my $td = table([1,2,3]);
+    dies_ok { $td->set_col_val('foo', sub { 1 }) } "unknown column -> dies";
+
+    $td->set_col_val('elem', sub { my %args = @_; $args{value}*2 });
+    is_deeply($td->{data}, [2,4,6]);
+};
+
 DONE_TESTING:
 done_testing;

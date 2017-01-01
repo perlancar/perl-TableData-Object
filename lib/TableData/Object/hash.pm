@@ -81,6 +81,46 @@ sub add_col {
     die "Cannot add_col in hash table";
 }
 
+sub set_col_val {
+    my ($self, $name_or_idx, $value_sub) = @_;
+
+    my $col_name = $self->col_name($name_or_idx);
+    my $col_idx  = $self->col_idx($name_or_idx);
+
+    die "Column '$name_or_idx' does not exist" unless defined $col_name;
+
+    my $hash = $self->{data};
+    if ($col_name eq 'key') {
+        my $row_idx = -1;
+        for my $key (sort keys %$hash) {
+            $row_idx++;
+            my $new_key = $value_sub->(
+                table    => $self,
+                row_idx  => $row_idx,
+                row_name => $key,
+                col_name => $col_name,
+                col_idx  => $col_idx,
+                value    => $hash->{$key},
+            );
+            $hash->{$new_key} = delete $hash->{$key}
+                unless $key eq $new_key;
+        }
+    } else {
+        my $row_idx = -1;
+        for my $key (sort keys %$hash) {
+            $row_idx++;
+            $hash->{$key} = $value_sub->(
+                table    => $self,
+                row_idx  => $row_idx,
+                row_name => $key,
+                col_name => $col_name,
+                col_idx  => $col_idx,
+                value    => $hash->{$key},
+            );
+        }
+    }
+}
+
 1;
 # ABSTRACT: Manipulate hash via table object
 

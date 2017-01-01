@@ -365,4 +365,4 @@ columns, e.g. aos, or hash.
 Set value of (all rows of) a column. C<$value_sub> is a coderef which will be
 given hash arguments containing these keys: C<table> (the TableData::Object
 instance), C<row_idx> (row number, 0-based), C<col_name> (column name),
-C<col_idx> (column index, 0-based).
+C<col_idx> (column index, 0-based), C<value> (current value).
