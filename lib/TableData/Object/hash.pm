@@ -74,7 +74,11 @@ sub const_col_names {
 }
 
 sub switch_cols {
-    die "Cannot switch column in aos table";
+    die "Cannot switch column in hash table";
+}
+
+sub add_col {
+    die "Cannot add_col in hash table";
 }
 
 1;

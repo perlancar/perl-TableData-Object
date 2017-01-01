@@ -78,6 +78,10 @@ sub switch_cols {
     die "Cannot switch column in aos table";
 }
 
+sub add_col {
+    die "Cannot add_col in aos table";
+}
+
 1;
 # ABSTRACT: Manipulate array of scalars via table object
 

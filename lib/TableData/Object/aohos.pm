@@ -201,6 +201,39 @@ sub switch_cols {
     }
 }
 
+sub add_col {
+    my ($self, $name, $idx, $spec) = @_;
+
+    # XXX BEGIN CODE dupe with aoaos
+    die "Column '$name' already exists" if defined $self->col_name($name);
+    my $col_count = $self->col_count;
+    if (defined $idx) {
+        die "Index must be between 0..$col_count"
+            unless $idx >= 0 && $idx <= $col_count;
+    } else {
+        $idx = $col_count;
+    }
+
+    for (keys %{ $self->{cols_by_name} }) {
+        $self->{cols_by_name}{$_}++ if $self->{cols_by_name}{$_} >= $idx;
+    }
+    $self->{cols_by_name}{$name} = $idx;
+    splice @{ $self->{cols_by_idx} }, $idx, 0, $name;
+    if ($self->{spec}) {
+        my $ff = $self->{spec}{fields};
+        for my $f (values %$ff) {
+            $f->{pos}++ if defined($f->{pos}) && $f->{pos} >= $idx;
+        }
+        $ff->{$name} = defined($spec) ? {%$spec} : {};
+        $ff->{$name}{pos} = $idx;
+    }
+    # XXX BEGIN CODE dupe with aoaos
+
+    for my $row (@{ $self->{data} }) {
+        $row->{$name} = undef;
+    }
+}
+
 1;
 # ABSTRACT: Manipulate array of hashes-of-scalars via table object
 

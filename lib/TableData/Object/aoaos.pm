@@ -192,6 +192,37 @@ sub switch_cols {
     }
 }
 
+sub add_col {
+    my ($self, $name, $idx, $spec) = @_;
+
+    die "Column '$name' already exists" if defined $self->col_name($name);
+    my $col_count = $self->col_count;
+    if (defined $idx) {
+        die "Index must be between 0..$col_count"
+            unless $idx >= 0 && $idx <= $col_count;
+    } else {
+        $idx = $col_count;
+    }
+
+    for (keys %{ $self->{cols_by_name} }) {
+        $self->{cols_by_name}{$_}++ if $self->{cols_by_name}{$_} >= $idx;
+    }
+    $self->{cols_by_name}{$name} = $idx;
+    splice @{ $self->{cols_by_idx} }, $idx, 0, $name;
+    if ($self->{spec}) {
+        my $ff = $self->{spec}{fields};
+        for my $f (values %$ff) {
+            $f->{pos}++ if defined($f->{pos}) && $f->{pos} >= $idx;
+        }
+        $ff->{$name} = defined($spec) ? {%$spec} : {};
+        $ff->{$name}{pos} = $idx;
+    }
+
+    for my $row (@{ $self->{data} }) {
+        splice @$row, $idx, 0, undef;
+    }
+}
+
 1;
 # ABSTRACT: Manipulate array of arrays-of-scalars via table object
 

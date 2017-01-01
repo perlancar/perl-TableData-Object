@@ -182,5 +182,44 @@ subtest switch_cols => sub {
                             {column2=>7,column1=>8,column0=>9}]);
 };
 
+subtest add_col => sub {
+    my $td = table(
+        [{column0=>1,column1=>2,column2=>3},
+         {column0=>4,column1=>5,column2=>6},
+         {column0=>7,column1=>8,column2=>9},],
+        {
+            fields => {
+                column0 => {pos=>0},
+                column1 => {pos=>1},
+                column2 => {pos=>2},
+            },
+        },
+    );
+    dies_ok { $td->add_col('foo', -1) }
+        "idx < 0 -> dies";
+    dies_ok { $td->add_col('foo', 4) }
+        "idx > row count -> dies";
+    dies_ok { $td->add_col('column0') }
+        "add existing column -> dies";
+
+    $td->add_col('foo', 1);
+    is_deeply($td->{cols_by_idx} , ["column0", "foo", "column1", "column2"]);
+    is_deeply($td->{cols_by_name}, {column0=>0, foo=>1, column1=>2, column2=>3});
+    is_deeply($td->{spec}, {
+        fields => {
+            column0 => {pos=>0},
+            foo     => {pos=>1},
+            column1 => {pos=>2},
+            column2 => {pos=>3},
+        },
+    });
+    is_deeply($td->{data}[0], {column0=>1, foo=>undef, column1=>2, column2=>3});
+
+    $td->add_col('bar');
+    is_deeply($td->{cols_by_idx} , ["column0", "foo", "column1", "column2", "bar"]);
+    is_deeply($td->{cols_by_name}, {column0=>0, foo=>1, column1=>2, column2=>3, bar=>4});
+    is_deeply($td->{data}[1], {column0=>4, foo=>undef, column1=>5, column2=>6, bar=>undef});
+};
+
 DONE_TESTING:
 done_testing;

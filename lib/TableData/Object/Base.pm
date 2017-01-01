@@ -350,3 +350,19 @@ rename (e.g. aos and hash).
 Die if either column is unknown. Will simply return if both are the same column.
 
 Might modify data (e.g. in aohos). Will modify spec, if spec was given.
+
+=head2 $td->add_col($name [ , $idx [ , $spec ] ])
+
+Add a column named C<$name>. If C<$idx> is specified, will set the position of
+the new column (and existing columns will shift to the right at that position).
+If C<$idx> is not specified, will put the new column at the end.
+
+Does not make sense for table form which can only have a fixed number of
+columns, e.g. aos, or hash.
+
+=head2 $td->set_col_value($name_or_idx, $value_sub)
+
+Set value of (all rows of) a column. C<$value_sub> is a coderef which will be
+given hash arguments containing these keys: C<table> (the TableData::Object
+instance), C<row_idx> (row number, 0-based), C<col_name> (column name),
+C<col_idx> (column index, 0-based).
