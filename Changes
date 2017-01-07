@@ -1,5 +1,3 @@
-Revision history for TableData-Object
-
 0.10    2017-01-01 (PERLANCAR)
 
 	- Add methods: set_col_val(), add_col().
