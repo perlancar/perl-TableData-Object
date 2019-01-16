@@ -66,7 +66,7 @@ sub col_count {
 }
 
 sub _select {
-    my ($self, $_as, $cols0, $func_filter_row, $sorts) = @_;
+    my ($self, $_as, $cols0, $excl_cols, $func_filter_row, $sorts) = @_;
 
     # determine result's columns & spec
     my $spec;
@@ -76,24 +76,34 @@ sub _select {
         $spec = {fields=>{}};
         my $i = 0;
         for my $col0 (@$cols0) {
-            die "Column '$col0' does not exist" unless $self->col_exists($col0);
-
-            my $col = $col0;
-            my $j = 1;
-            while (defined $newcols_to_origcols{$col}) {
-                $j++;
-                $col = "${col0}_$j";
+            my @add;
+            if ($col0 eq '*') {
+                @add = @{ $self->{cols_by_idx} };
+            } else {
+                die "Column '$col0' does not exist" unless $self->col_exists($col0);
+                @add = ($col0);
             }
-            $newcols_to_origcols{$col} = $col0;
-            push @newcols, $col;
 
-            $spec->{fields}{$col} = {
-                %{$self->{spec}{fields}{$col0} // {}},
-                pos=>$i,
-            };
-            $i++;
+            for my $add (@add) {
+                next if $excl_cols && (grep {$add eq $_} @$excl_cols);
+                my $j = 1;
+                my $col = $add;
+                while (defined $newcols_to_origcols{$col}) {
+                    $j++;
+                    $col = "${add}_$j";
+                }
+                $newcols_to_origcols{$col} = $add;
+                push @newcols, $col;
+
+                $spec->{fields}{$col} = {
+                    %{$self->{spec}{fields}{$add} // {}},
+                    pos=>$i,
+                };
+                $i++;
+            }
         }
     } else {
+        # XXX excl_cols is not being observed
         $spec = $self->{spec};
         $cols0 = $self->{cols_by_idx};
         @newcols = @{ $self->{cols_by_idx} };
@@ -176,13 +186,13 @@ sub _select {
 }
 
 sub select_as_aoaos {
-    my ($self, $cols, $func_filter_row, $sorts) = @_;
-    $self->_select('aoaos', $cols, $func_filter_row, $sorts);
+    my ($self, $cols, $excl_cols, $func_filter_row, $sorts) = @_;
+    $self->_select('aoaos', $cols, $excl_cols, $func_filter_row, $sorts);
 }
 
 sub select_as_aohos {
-    my ($self, $cols, $func_filter_row, $sorts) = @_;
-    $self->_select('aohos', $cols, $func_filter_row, $sorts);
+    my ($self, $cols, $excl_cols, $func_filter_row, $sorts) = @_;
+    $self->_select('aohos', $cols, $excl_cols, $func_filter_row, $sorts);
 }
 
 sub uniq_col_names { die "Must be implemented by subclass" }
