@@ -71,6 +71,7 @@ sub _select {
     # determine result's columns & spec
     my $spec;
     my %newcols_to_origcols;
+    my @cols0; # original column names but with '*' expanded
     my @newcols;
     if ($cols0) {
         $spec = {fields=>{}};
@@ -86,6 +87,7 @@ sub _select {
 
             for my $add (@add) {
                 next if $excl_cols && (grep {$add eq $_} @$excl_cols);
+                push @cols0, $add;
                 my $j = 1;
                 my $col = $add;
                 while (defined $newcols_to_origcols{$col}) {
@@ -102,6 +104,7 @@ sub _select {
                 $i++;
             }
         }
+        $cols0 = \@cols0;
     } else {
         # XXX excl_cols is not being observed
         $spec = $self->{spec};
