@@ -23,6 +23,11 @@ sub row_count {
     scalar @{ $self->{data} };
 }
 
+sub rows {
+    my $self = shift;
+    $self->{data};
+}
+
 sub rows_as_aoaos {
     my $self = shift;
     [map {[$_]} @{ $self->{data} }];

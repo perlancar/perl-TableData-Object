@@ -24,6 +24,12 @@ sub row_count {
     scalar keys %{ $self->{data} };
 }
 
+sub rows {
+    my $self = shift;
+    my $data = $self->{data};
+    [sort keys %$data];
+}
+
 sub rows_as_aoaos {
     my $self = shift;
     my $data = $self->{data};
