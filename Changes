@@ -1,3 +1,8 @@
+0.111   2019-09-15  Released-By: PERLANCAR; Urgency: medium
+
+	- Add rows().
+
+
 0.110   2019-01-16  Released-By: PERLANCAR
 
 	- select(): Allow '*' as column to mean all columns, allow
