@@ -1,6 +1,8 @@
 package TableData::Object::hash;
 
+# AUTHORITY
 # DATE
+# DIST
 # VERSION
 
 use 5.010001;
@@ -24,10 +26,32 @@ sub row_count {
     scalar keys %{ $self->{data} };
 }
 
+sub row {
+    my ($self, $idx) = @_;
+    # XXX not very efficient
+    my $rows = $self->rows;
+    $rows->[$idx];
+}
+
+sub row_as_aos {
+    my ($self, $idx) = @_;
+    # XXX not very efficient
+    my $rows = $self->rows;
+    $rows->[$idx];
+}
+
+sub row_as_hos {
+    my ($self, $idx) = @_;
+    # XXX not very efficient
+    my $rows = $self->rows;
+    my $row = $rows->[$idx];
+    return undef unless $row;
+    {key => $row->[0], value => $row->[1]};
+}
+
 sub rows {
     my $self = shift;
-    my $data = $self->{data};
-    [sort keys %$data];
+    $self->rows_as_aoaos;
 }
 
 sub rows_as_aoaos {
