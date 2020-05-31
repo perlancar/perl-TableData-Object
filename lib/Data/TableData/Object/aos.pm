@@ -1,13 +1,15 @@
-package TableData::Object::aos;
+package Data::TableData::Object::aos;
 
+# AUTHORITY
 # DATE
+# DIST
 # VERSION
 
 use 5.010001;
 use strict;
 use warnings;
 
-use parent 'TableData::Object::Base';
+use parent 'Data::TableData::Object::Base';
 
 sub new {
     my ($class, $data) = @_;
@@ -116,15 +118,15 @@ sub set_col_val {
 
 To create:
 
- use TableData::Object qw(table);
+ use Data::TableData::Object qw(table);
 
  my $td = table([1,2,3]);
 
 or:
 
- use TableData::Object::aos;
+ use Data::TableData::Object::aos;
 
- my $td = TableData::Object::aos->new([1,2,3]);
+ my $td = Data::TableData::Object::aos->new([1,2,3]);
 
 
 =head1 DESCRIPTION
@@ -135,4 +137,4 @@ will have a single column named C<elem>.
 
 =head1 METHODS
 
-See L<TableData::Object::Base>.
+See L<Data::TableData::Object::Base>.

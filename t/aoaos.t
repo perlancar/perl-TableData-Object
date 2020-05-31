@@ -3,13 +3,13 @@
 use 5.010;
 use strict;
 use warnings;
-
-use TableData::Object qw(table);
 use Test::Exception;
 use Test::More 0.98;
 
+use Data::TableData::Object qw(table);
+
 my $td = table([[1,2],[5,6],[3,4]]);
-ok($td->isa("TableData::Object::aoaos"), "isa");
+ok($td->isa("Data::TableData::Object::aoaos"), "isa");
 
 is_deeply($td->cols_by_name, {column0=>0, column1=>1}, "cols_by_name");
 is_deeply($td->cols_by_idx, ['column0','column1'], "cols_by_idx");
@@ -77,7 +77,7 @@ subtest select => sub {
 };
 
 subtest uniq_col_names => sub {
-    is_deeply([TableData::Object::aoaos->new([])->uniq_col_names], []);
+    is_deeply([Data::TableData::Object::aoaos->new([])->uniq_col_names], []);
     is_deeply([table([
         [1,1,undef],
         [2,2,undef,3],
@@ -86,7 +86,7 @@ subtest uniq_col_names => sub {
 };
 
 subtest const_col_names => sub {
-    is_deeply([TableData::Object::aoaos->new([])->const_col_names], []);
+    is_deeply([Data::TableData::Object::aoaos->new([])->const_col_names], []);
     is_deeply([table([
         [1,2,undef],
         [2,2,undef,3],

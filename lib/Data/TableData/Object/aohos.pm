@@ -1,13 +1,15 @@
-package TableData::Object::aoaos;
+package Data::TableData::Object::aohos;
 
+# AUTHORITY
 # DATE
+# DIST
 # VERSION
 
 use 5.010001;
 use strict;
 use warnings;
 
-use parent 'TableData::Object::Base';
+use parent 'Data::TableData::Object::Base';
 
 sub new {
     my ($class, $data, $spec) = @_;
@@ -26,13 +28,17 @@ sub new {
                 keys %$ff
         };
     } else {
-        if (@$data) {
-            my $ncols = @{ $data->[0] };
-            $self->{cols_by_idx}  = [ map {"column$_"} 0 .. $ncols-1 ];
-            $self->{cols_by_name} = { map {("column$_" => $_)} 0..$ncols-1 };
-        } else {
-            $self->{cols_by_idx}  = [];
-            $self->{cols_by_name} = {};
+        my %cols;
+        for my $row (@$data) {
+            $cols{$_}++ for keys %$row;
+        }
+        my $i = 0;
+        $self->{cols_by_name} = {};
+        $self->{cols_by_idx}  = [];
+        for my $k (sort keys %cols) {
+            $self->{cols_by_name}{$k} = $i;
+            $self->{cols_by_idx}[$i] = $k;
+            $i++;
         }
     }
     $self;
@@ -50,72 +56,67 @@ sub rows {
 
 sub rows_as_aoaos {
     my $self = shift;
-    $self->{data};
-}
-
-sub rows_as_aohos {
-    my $self = shift;
     my $data = $self->{data};
 
     my $cols = $self->{cols_by_idx};
     my $rows = [];
-    for my $aos (@{$self->{data}}) {
-        my $row = {};
+    for my $hos (@{$self->{data}}) {
+        my $row = [];
         for my $i (0..$#{$cols}) {
-            $row->{$cols->[$i]} = $aos->[$i];
+            $row->[$i] = $hos->{$cols->[$i]};
         }
         push @$rows, $row;
     }
     $rows;
 }
 
+sub rows_as_aohos {
+    my $self = shift;
+    $self->{data};
+}
+
 sub uniq_col_names {
-    my ($self, $which) = @_;
+    my $self = shift;
 
     my @res;
   COL:
-    for my $colname (sort keys %{$self->{cols_by_name}}) {
-        my $colidx = $self->{cols_by_name}{$colname};
+    for my $col (sort keys %{$self->{cols_by_name}}) {
         my %mem;
         for my $row (@{$self->{data}}) {
-            next COL unless $#{$row} >= $colidx;
-            next COL unless defined $row->[$colidx];
-            next COL if $mem{ $row->[$colidx] }++;
+            next COL unless defined $row->{$col};
+            next COL if $mem{ $row->{$col} }++;
         }
-        push @res, $colname;
+        push @res, $col;
     }
-
     @res;
 }
 
 sub const_col_names {
-    my ($self, $which) = @_;
+    my $self = shift;
 
     my @res;
   COL:
-    for my $colname (sort keys %{$self->{cols_by_name}}) {
-        my $colidx = $self->{cols_by_name}{$colname};
+    for my $col (sort keys %{$self->{cols_by_name}}) {
         my $i = -1;
         my $val;
         my $val_undef;
         for my $row (@{$self->{data}}) {
-            next COL unless $#{$row} >= $colidx;
+            next COL unless exists $row->{$col};
             $i++;
             if ($i == 0) {
-                $val = $row->[$colidx];
+                $val = $row->{$col};
                 $val_undef = 1 unless defined $val;
             } else {
                 if ($val_undef) {
-                    next COL if defined;
+                    next COL if defined $row->{$col};
                 } else {
-                    next COL unless defined $row->[$colidx];
-                    next COL unless $val eq $row->[$colidx];
+                    next COL unless defined $row->{$col};
+                    next COL unless $val eq $row->{$col};
                 }
             }
         }
-        push @res, $colname;
+        push @res, $col;
     }
-
     @res;
 }
 
@@ -128,7 +129,7 @@ sub del_col {
     my $name = $self->{cols_by_idx}[$idx];
 
     for my $row (@{$self->{data}}) {
-        splice @$row, $idx, 1;
+        delete $row->{$name};
     }
 
     # adjust cols_by_{name,idx}
@@ -167,6 +168,11 @@ sub rename_col {
     return if $new_name eq $old_name;
     die "New column name must not be a number" if $new_name =~ /\A\d+\z/;
 
+    # adjust data
+    for my $row (@{$self->{data}}) {
+        $row->{$new_name} = delete($row->{$old_name});
+    }
+
     $self->{cols_by_idx}[$idx] = $new_name;
     $self->{cols_by_name}{$new_name} = delete($self->{cols_by_name}{$old_name});
     if ($self->{spec}) {
@@ -187,6 +193,11 @@ sub switch_cols {
     my $name1 = $self->col_name($name_or_idx1);
     my $name2 = $self->col_name($name_or_idx2);
 
+    # adjust data
+    for my $row (@{$self->{data}}) {
+        ($row->{$name1}, $row->{$name2}) = ($row->{$name2}, $row->{$name1});
+    }
+
     ($self->{cols_by_idx}[$idx1], $self->{cols_by_idx}[$idx2]) =
         ($self->{cols_by_idx}[$idx2], $self->{cols_by_idx}[$idx1]);
     ($self->{cols_by_name}{$name1}, $self->{cols_by_name}{$name2}) =
@@ -200,6 +211,7 @@ sub switch_cols {
 sub add_col {
     my ($self, $name, $idx, $spec) = @_;
 
+    # XXX BEGIN CODE dupe with aoaos
     die "Column '$name' already exists" if defined $self->col_name($name);
     my $col_count = $self->col_count;
     if (defined $idx) {
@@ -222,9 +234,10 @@ sub add_col {
         $ff->{$name} = defined($spec) ? {%$spec} : {};
         $ff->{$name}{pos} = $idx;
     }
+    # XXX BEGIN CODE dupe with aoaos
 
     for my $row (@{ $self->{data} }) {
-        splice @$row, $idx, 0, undef;
+        $row->{$name} = undef;
     }
 }
 
@@ -238,18 +251,18 @@ sub set_col_val {
 
     for my $i (0..$#{ $self->{data} }) {
         my $row = $self->{data}[$i];
-        $row->[$col_idx] = $value_sub->(
+        $row->{$col_name} = $value_sub->(
             table    => $self,
             row_idx  => $i,
             col_name => $col_name,
             col_idx  => $col_idx,
-            value    => $row->[$col_idx],
+            value    => $row->{$col_name},
         );
     }
 }
 
 1;
-# ABSTRACT: Manipulate array of arrays-of-scalars via table object
+# ABSTRACT: Manipulate array of hashes-of-scalars via table object
 
 =for Pod::Coverage .+
 
@@ -257,25 +270,23 @@ sub set_col_val {
 
 To create:
 
- use TableData::Object qw(table);
+ use Data::TableData::Object qw(table);
 
- my $td = table([[1,2,3], [4,5,6]]);
+ my $td = table([{foo=>10, bar=>10}, {bar=>20, baz=>20}]);
 
 or:
 
- use TableData::Object::aoaos;
+ use Data::TableData::Object::aohos;
 
- my $td = TableData::Object::aoaos->new([[1,2,3], [4,5,6]]);
+ my $td = Data::TableData::Object::aohos->new([{foo=>10, bar=>10}, {bar=>20, baz=>20}]);
 
 
 =head1 DESCRIPTION
 
-This class lets you manipulate an array of arrays-of-scalars as a table object.
-The table will have column names C<column0>, C<column1>, and so on. The first
-array-of-scalars will determine the number of columns (unless if you also give
-C<spec>).
+This class lets you manipulate an array of hashes-of-scalars as a table object.
+The table will have columns from all the hashes' keys.
 
 
 =head1 METHODS
 
-See L<TableData::Object::Base>.
+See L<Data::TableData::Object::Base>.

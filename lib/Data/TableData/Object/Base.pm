@@ -1,6 +1,8 @@
-package TableData::Object::Base;
+package Data::TableData::Object::Base;
 
+# AUTHORITY
 # DATE
+# DIST
 # VERSION
 
 use 5.010;
@@ -180,11 +182,11 @@ sub _select {
 
     # return result as object
     if ($_as eq 'aoaos') {
-        require TableData::Object::aoaos;
-        return TableData::Object::aoaos->new($rows, $spec);
+        require Data::TableData::Object::aoaos;
+        return Data::TableData::Object::aoaos->new($rows, $spec);
     } else {
-        require TableData::Object::aohos;
-        return TableData::Object::aohos->new($rows, $spec);
+        require Data::TableData::Object::aohos;
+        return Data::TableData::Object::aohos->new($rows, $spec);
     }
 }
 
@@ -209,7 +211,7 @@ sub rename_col { die "Must be implemented by subclass" }
 sub switch_cols { die "Must be implemented by subclass" }
 
 1;
-# ABSTRACT: Base class for TableData::Object::*
+# ABSTRACT: Base class for Data::TableData::Object::*
 
 =head1 METHODS
 
@@ -387,6 +389,6 @@ columns, e.g. aos, or hash.
 =head2 $td->set_col_value($name_or_idx, $value_sub)
 
 Set value of (all rows of) a column. C<$value_sub> is a coderef which will be
-given hash arguments containing these keys: C<table> (the TableData::Object
-instance), C<row_idx> (row number, 0-based), C<col_name> (column name),
-C<col_idx> (column index, 0-based), C<value> (current value).
+given hash arguments containing these keys: C<table> (the
+Data::TableData::Object instance), C<row_idx> (row number, 0-based), C<col_name>
+(column name), C<col_idx> (column index, 0-based), C<value> (current value).

@@ -1,6 +1,8 @@
-package TableData::Object;
+package Data::TableData::Object;
 
+# AUTHORITY
 # DATE
+# DIST
 # VERSION
 
 use 5.010001;
@@ -22,10 +24,10 @@ sub new {
     } elsif (ref($data) eq 'HASH') {
         require TableData::Object::hash;
         TableData::Object::hash->new($data);
-    } elsif (is_aoaos($data, {max=>10})) {
+    } elsif (is_aoaos($data)) {
         require TableData::Object::aoaos;
         TableData::Object::aoaos->new($data, $spec);
-    } elsif (is_aohos($data, {max=>10})) {
+    } elsif (is_aohos($data)) {
         require TableData::Object::aohos;
         TableData::Object::aohos->new($data, $spec);
     } elsif (ref($data) eq 'ARRAY') {
@@ -46,7 +48,7 @@ sub new {
 
 =head2 table($data[ , $spec ]) => obj
 
-Shortcut for C<< TableData::Object->new(...) >>.
+Shortcut for C<< Data::TableData::Object->new(...) >>.
 
 
 =head1 METHODS
@@ -59,12 +61,12 @@ C<TableData::Object::FORM> object.
 
 =head1 SEE ALSO
 
-L<TableData::Object::Base> for list of available methods.
+L<Data::TableData::Object::Base> for list of available methods.
 
-L<TableData::Object::aos>
+L<Data::TableData::Object::aos>
 
-L<TableData::Object::aoaos>
+L<Data::TableData::Object::aoaos>
 
-L<TableData::Object::aohos>
+L<Data::TableData::Object::aohos>
 
-L<TableData::Object::hash>
+L<Data::TableData::Object::hash>

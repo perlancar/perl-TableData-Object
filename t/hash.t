@@ -3,13 +3,13 @@
 use 5.010;
 use strict;
 use warnings;
-
-use TableData::Object qw(table);
 use Test::Exception;
 use Test::More 0.98;
 
+use Data::TableData::Object qw(table);
+
 my $td = table({a=>1, b=>2, c=>3});
-ok($td->isa("TableData::Object::hash"), "isa");
+ok($td->isa("Data::TableData::Object::hash"), "isa");
 
 is_deeply($td->cols_by_name, {key=>0, value=>1}, "cols_by_name");
 is_deeply($td->cols_by_idx, ['key', 'value'], "cols_by_idx");

@@ -1,13 +1,15 @@
-package TableData::Object::hash;
+package Data::TableData::Object::hash;
 
+# AUTHORITY
 # DATE
+# DIST
 # VERSION
 
 use 5.010001;
 use strict;
 use warnings;
 
-use parent 'TableData::Object::Base';
+use parent 'Data::TableData::Object::Base';
 
 sub new {
     my ($class, $data) = @_;
@@ -136,15 +138,15 @@ sub set_col_val {
 
 To create:
 
- use TableData::Object qw(table);
+ use Data::TableData::Object qw(table);
 
  my $td = table({foo=>10, bar=>20, baz=>30});
 
 or:
 
- use TableData::Object::hash;
+ use Data::TableData::Object::hash;
 
- my $td = TableData::Object::hash->new({foo=>10, bar=>20, baz=>30});
+ my $td = Data::TableData::Object::hash->new({foo=>10, bar=>20, baz=>30});
 
 
 =head1 DESCRIPTION
@@ -156,4 +158,4 @@ values).
 
 =head1 METHODS
 
-See L<TableData::Object::Base>.
+See L<Data::TableData::Object::Base>.
