@@ -22,17 +22,17 @@ sub new {
     if (!defined($data)) {
         die "Please specify table data";
     } elsif (ref($data) eq 'HASH') {
-        require TableData::Object::hash;
-        TableData::Object::hash->new($data);
+        require Data::TableData::Object::hash;
+        Data::TableData::Object::hash->new($data);
     } elsif (is_aoaos($data)) {
-        require TableData::Object::aoaos;
-        TableData::Object::aoaos->new($data, $spec);
+        require Data::TableData::Object::aoaos;
+        Data::TableData::Object::aoaos->new($data, $spec);
     } elsif (is_aohos($data)) {
-        require TableData::Object::aohos;
-        TableData::Object::aohos->new($data, $spec);
+        require Data::TableData::Object::aohos;
+        Data::TableData::Object::aohos->new($data, $spec);
     } elsif (ref($data) eq 'ARRAY') {
-        require TableData::Object::aos;
-        TableData::Object::aos->new($data);
+        require Data::TableData::Object::aos;
+        Data::TableData::Object::aos->new($data);
     } else {
         die "Unknown table data form, please supply array of scalar, ".
             "array of array-of-scalar, or array of hash-of-scalar";
@@ -56,7 +56,7 @@ Shortcut for C<< Data::TableData::Object->new(...) >>.
 =head2 new($data[ , $spec ]) => obj
 
 Detect the structure of C<$data> and create the appropriate
-C<TableData::Object::FORM> object.
+C<Data::TableData::Object::FORM> object.
 
 
 =head1 SEE ALSO

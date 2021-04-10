@@ -9,7 +9,7 @@ use 5.010001;
 use strict;
 use warnings;
 
-use parent 'TableData::Object::Base';
+use parent 'Data::TableData::Object::Base';
 
 sub new {
     my ($class, $data, $spec) = @_;
