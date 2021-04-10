@@ -1,3 +1,10 @@
+0.112   2021-04-10  Released-By: PERLANCAR; Urgency: high
+
+        - Rename module/dist from TableData-Object to Data-TableData-Object
+          because the namespace TableData::* will be used for module that
+          contains table data (formerly Tables).
+
+
 0.111   2019-09-15  Released-By: PERLANCAR; Urgency: medium
 
 	- Add rows().
@@ -79,4 +86,3 @@
 0.01     2014-08-16  Released-By: SHARYANTO; Note: Happy 19th CPAN Day!
 
         - First version.
-
