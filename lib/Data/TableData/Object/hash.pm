@@ -45,7 +45,7 @@ sub row_as_hos {
     # XXX not very efficient
     my $rows = $self->rows;
     my $row = $rows->[$idx];
-    return undef unless $row;
+    return undef unless $row; ## no critic: Subroutines::ProhibitExplicitReturnUndef
     {key => $row->[0], value => $row->[1]};
 }
 

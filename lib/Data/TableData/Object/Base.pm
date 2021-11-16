@@ -1,6 +1,6 @@
 package Data::TableData::Object::Base;
 
-use 5.01001;
+use 5.010001;
 use strict;
 use warnings;
 
@@ -71,7 +71,7 @@ sub col_content {
     my ($self, $name_or_idx) = @_;
 
     my $col_idx = $self->col_idx($name_or_idx);
-    return undef unless defined $col_idx;
+    return undef unless defined $col_idx; ## no critic: Subroutines::ProhibitExplicitReturnUndef
 
     my $row_count = $self->row_count;
     return [] unless $row_count;

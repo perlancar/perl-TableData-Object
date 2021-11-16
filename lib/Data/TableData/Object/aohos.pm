@@ -57,7 +57,7 @@ sub row {
 sub row_as_aos {
     my ($self, $idx) = @_;
     my $row_hos = $self->{data}[$idx];
-    return undef unless $row_hos;
+    return undef unless $row_hos; ## no critic: Subroutines::ProhibitExplicitReturnUndef
     my $cols = $self->{cols_by_idx};
     my $row_aos = [];
     for my $i (0..$#{$cols}) {
@@ -146,7 +146,7 @@ sub del_col {
     my ($self, $name_or_idx) = @_;
 
     my $idx = $self->col_idx($name_or_idx);
-    return undef unless defined $idx;
+    return undef unless defined $idx; ## no critic: Subroutines::ProhibitExplicitReturnUndef
 
     my $name = $self->{cols_by_idx}[$idx];
 

@@ -32,13 +32,13 @@ sub row {
 
 sub row_as_aos {
     my ($self, $idx) = @_;
-    return undef if $idx < 0 || $idx >= @{ $self->{data} };
+    return undef if $idx < 0 || $idx >= @{ $self->{data} }; ## no critic: Subroutines::ProhibitExplicitReturnUndef
     [$self->{data}[$idx]];
 }
 
 sub row_as_hos {
     my ($self, $idx) = @_;
-    return undef if $idx < 0 || $idx >= @{ $self->{data} };
+    return undef if $idx < 0 || $idx >= @{ $self->{data} }; ## no critic: Subroutines::ProhibitExplicitReturnUndef
     {elem=>$self->{data}[$idx]};
 }
 
