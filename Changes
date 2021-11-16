@@ -1,3 +1,8 @@
+0.114   2021-11-17  Released-By: PERLANCAR; Urgency: medium
+
+	- add_col(): Allow specifying data for new column.
+
+
 0.113   2021-11-17  Released-By: PERLANCAR; Urgency: high
 
         - Merge releases 0.112 and 0.112.2.
