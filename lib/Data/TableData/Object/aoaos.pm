@@ -1,15 +1,15 @@
 package Data::TableData::Object::aoaos;
 
-# AUTHORITY
-# DATE
-# DIST
-# VERSION
-
 use 5.010001;
 use strict;
 use warnings;
 
 use parent 'Data::TableData::Object::Base';
+
+# AUTHORITY
+# DATE
+# DIST
+# VERSION
 
 sub new {
     my ($class, $data, $spec) = @_;

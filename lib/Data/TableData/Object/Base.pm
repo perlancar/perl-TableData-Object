@@ -1,15 +1,15 @@
 package Data::TableData::Object::Base;
 
-# AUTHORITY
-# DATE
-# DIST
-# VERSION
-
-use 5.010;
+use 5.01001;
 use strict;
 use warnings;
 
 use Scalar::Util::Numeric qw(isint isfloat);
+
+# AUTHORITY
+# DATE
+# DIST
+# VERSION
 
 sub _array_is_numeric {
     my $self = shift;
