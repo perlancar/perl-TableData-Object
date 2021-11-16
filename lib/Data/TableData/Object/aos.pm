@@ -25,6 +25,23 @@ sub row_count {
     scalar @{ $self->{data} };
 }
 
+sub row {
+    my ($self, $idx) = @_;
+    $self->{data}[$idx];
+}
+
+sub row_as_aos {
+    my ($self, $idx) = @_;
+    return undef if $idx < 0 || $idx >= @{ $self->{data} };
+    [$self->{data}[$idx]];
+}
+
+sub row_as_hos {
+    my ($self, $idx) = @_;
+    return undef if $idx < 0 || $idx >= @{ $self->{data} };
+    {elem=>$self->{data}[$idx]};
+}
+
 sub rows {
     my $self = shift;
     $self->{data};

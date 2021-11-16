@@ -1,8 +1,15 @@
-0.112   2021-04-10  Released-By: PERLANCAR; Urgency: high
+0.112.2 2021-04-10  Released-By: PERLANCAR; Urgency: high
 
         - Rename module/dist from TableData-Object to Data-TableData-Object
           because the namespace TableData::* will be used for module that
           contains table data (formerly Tables).
+
+        - UPDATE 2021-11-17: Rename release from 0.112 to 0.112.2.
+
+
+0.112   2020-05-29  Released-By: PERLANCAR; Urgency: medium
+
+	- Add col_content(), row(), row_as_aos(), row_as_aohos().
 
 
 0.111   2019-09-15  Released-By: PERLANCAR; Urgency: medium

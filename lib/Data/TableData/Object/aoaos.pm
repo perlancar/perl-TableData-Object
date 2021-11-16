@@ -45,6 +45,28 @@ sub row_count {
     scalar @{ $self->{data} };
 }
 
+sub row {
+    my ($self, $idx) = @_;
+    $self->{data}[$idx];
+}
+
+sub row_as_aos {
+    my ($self, $idx) = @_;
+    $self->{data}[$idx];
+}
+
+sub row_as_hos {
+    my ($self, $idx) = @_;
+    my $row_aos = $self->{data}[$idx];
+    return undef unless $row_aos;
+    my $cols = $self->{cols_by_idx};
+    my $row_hos = {};
+    for my $i (0..$#{$cols}) {
+        $row_hos->{$cols->[$i]} = $row_aos->[$i];
+    }
+    $row_hos;
+}
+
 sub rows {
     my $self = shift;
     $self->{data};
