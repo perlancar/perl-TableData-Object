@@ -222,7 +222,7 @@ sub switch_cols {
 }
 
 sub add_col {
-    my ($self, $name, $idx, $spec) = @_;
+    my ($self, $name, $idx, $spec, $data) = @_;
 
     die "Column '$name' already exists" if defined $self->col_name($name);
     my $col_count = $self->col_count;
@@ -247,8 +247,10 @@ sub add_col {
         $ff->{$name}{pos} = $idx;
     }
 
+    my $i = 0;
     for my $row (@{ $self->{data} }) {
-        splice @$row, $idx, 0, undef;
+        splice @$row, $idx, 0, ($data ? $data->[$i] : undef);
+        $i++;
     }
 }
 

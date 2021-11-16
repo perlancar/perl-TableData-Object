@@ -231,7 +231,7 @@ sub switch_cols {
 }
 
 sub add_col {
-    my ($self, $name, $idx, $spec) = @_;
+    my ($self, $name, $idx, $spec, $data) = @_;
 
     # XXX BEGIN CODE dupe with aoaos
     die "Column '$name' already exists" if defined $self->col_name($name);
@@ -258,8 +258,10 @@ sub add_col {
     }
     # XXX BEGIN CODE dupe with aoaos
 
+    my $i = 0;
     for my $row (@{ $self->{data} }) {
-        $row->{$name} = undef;
+        $row->{$name} = $data ? $data->[$i] : undef;
+        $i++;
     }
 }
 

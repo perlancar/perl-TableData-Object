@@ -259,6 +259,14 @@ subtest add_col => sub {
     is_deeply($td->{cols_by_idx} , ["column0", "foo", "column1", "column2", "bar"]);
     is_deeply($td->{cols_by_name}, {column0=>0, foo=>1, column1=>2, column2=>3, bar=>4});
     is_deeply($td->{data}[1], {column0=>4, foo=>undef, column1=>5, column2=>6, bar=>undef});
+
+    # data for new column
+    $td->add_col('baz', undef, undef, [11,12,13]);
+    is_deeply($td->{data}, [
+        {column0=>1, foo=>undef, column1=>2, column2=>3, bar=>undef, baz=>11},
+        {column0=>4, foo=>undef, column1=>5, column2=>6, bar=>undef, baz=>12},
+        {column0=>7, foo=>undef, column1=>8, column2=>9, bar=>undef, baz=>13},
+    ]);
 };
 
 subtest set_col_val => sub {

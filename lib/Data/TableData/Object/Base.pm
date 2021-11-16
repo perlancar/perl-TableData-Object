@@ -421,11 +421,14 @@ Die if either column is unknown. Will simply return if both are the same column.
 
 Might modify data (e.g. in aohos). Will modify spec, if spec was given.
 
-=head2 $td->add_col($name [ , $idx [ , $spec ] ])
+=head2 $td->add_col($name [ , $idx [ , $spec [ , \@data ] ] ])
 
 Add a column named C<$name>. If C<$idx> is specified, will set the position of
 the new column (and existing columns will shift to the right at that position).
 If C<$idx> is not specified, will put the new column at the end.
+
+C<@data> is the value of the new column for each row. If not specified, the new
+column will be set to C<undef>.
 
 Does not make sense for table form which can only have a fixed number of
 columns, e.g. aos, or hash.
