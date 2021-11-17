@@ -42,9 +42,21 @@ sub new {
 }
 
 1;
-# ABSTRACT: Manipulate data structure via table object
+# ABSTRACT: Manipulate table-like data structure via table object
 
 =for Pod::Coverage ^$
+
+=head1 DESCRIPTION
+
+This module provides a common interface to manipulate a few kinds of data
+structures that are "table-like": aoaos (array of array-of-scalars), aohos
+(array of hash-of-scalars), aos (array of scalars, viewed as a single-column
+table), and hash (viewed as two-column table with the columns being "key" and
+"value').
+
+The interface (see L<Data::TableData::Object::Base>) allows you to list columns,
+add/delete columns, retrieve rows, convert to aoaos or aohos, etc.
+
 
 =head1 FUNCTIONS
 
