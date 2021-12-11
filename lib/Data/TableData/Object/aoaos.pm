@@ -1,15 +1,15 @@
 package Data::TableData::Object::aoaos;
 
-# AUTHORITY
-# DATE
-# DIST
-# VERSION
-
 use 5.010001;
 use strict;
 use warnings;
 
 use parent 'Data::TableData::Object::Base';
+
+# AUTHORITY
+# DATE
+# DIST
+# VERSION
 
 sub new {
     my ($class, $data, $spec) = @_;
@@ -43,6 +43,28 @@ sub new {
 sub row_count {
     my $self = shift;
     scalar @{ $self->{data} };
+}
+
+sub row {
+    my ($self, $idx) = @_;
+    $self->{data}[$idx];
+}
+
+sub row_as_aos {
+    my ($self, $idx) = @_;
+    $self->{data}[$idx];
+}
+
+sub row_as_hos {
+    my ($self, $idx) = @_;
+    my $row_aos = $self->{data}[$idx];
+    return undef unless $row_aos; ## no critic: Subroutines::ProhibitExplicitReturnUndef
+    my $cols = $self->{cols_by_idx};
+    my $row_hos = {};
+    for my $i (0..$#{$cols}) {
+        $row_hos->{$cols->[$i]} = $row_aos->[$i];
+    }
+    $row_hos;
 }
 
 sub rows {
@@ -125,7 +147,7 @@ sub del_col {
     my ($self, $name_or_idx) = @_;
 
     my $idx = $self->col_idx($name_or_idx);
-    return undef unless defined $idx;
+    return undef unless defined $idx; ## no critic: Subroutines::ProhibitExplicitReturnUndef
 
     my $name = $self->{cols_by_idx}[$idx];
 
@@ -200,7 +222,7 @@ sub switch_cols {
 }
 
 sub add_col {
-    my ($self, $name, $idx, $spec) = @_;
+    my ($self, $name, $idx, $spec, $data) = @_;
 
     die "Column '$name' already exists" if defined $self->col_name($name);
     my $col_count = $self->col_count;
@@ -225,8 +247,10 @@ sub add_col {
         $ff->{$name}{pos} = $idx;
     }
 
+    my $i = 0;
     for my $row (@{ $self->{data} }) {
-        splice @$row, $idx, 0, undef;
+        splice @$row, $idx, 0, ($data ? $data->[$i] : undef);
+        $i++;
     }
 }
 

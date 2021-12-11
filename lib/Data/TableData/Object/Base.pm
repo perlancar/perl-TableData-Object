@@ -1,15 +1,15 @@
 package Data::TableData::Object::Base;
 
-# AUTHORITY
-# DATE
-# DIST
-# VERSION
-
-use 5.010;
+use 5.010001;
 use strict;
 use warnings;
 
 use Scalar::Util::Numeric qw(isint isfloat);
+
+# AUTHORITY
+# DATE
+# DIST
+# VERSION
 
 sub _array_is_numeric {
     my $self = shift;
@@ -65,6 +65,23 @@ sub col_idx {
 sub col_count {
     my $self = shift;
     scalar @{ $self->{cols_by_idx} };
+}
+
+sub col_content {
+    my ($self, $name_or_idx) = @_;
+
+    my $col_idx = $self->col_idx($name_or_idx);
+    return undef unless defined $col_idx; ## no critic: Subroutines::ProhibitExplicitReturnUndef
+
+    my $row_count = $self->row_count;
+    return [] unless $row_count;
+
+    my $col_content = [];
+    for my $i (0 .. $row_count-1) {
+        my $row = $self->row_as_aos($i);
+        $col_content->[$i] = $row->[$col_idx];
+    }
+    $col_content;
 }
 
 sub _select {
@@ -254,6 +271,21 @@ See also: C<row_count()>.
 Check whether a column exists. Column can be referred to using its name or
 index/position (0, 1, ...).
 
+=head2 $td->col_content($name_or_idx) => aos
+
+Get the content of a column as an array of strings. Return undef if column is
+unknown. For example, given this table data:
+
+ | name  | age |
+ |-------+-----|
+ | andi  | 25  |
+ | budi  | 29  |
+ | cinta | 17  |
+
+then C<< $td->col_content('name') >> or C<< $td->col_content(0) >> will be:
+
+ ['andi', 'budi', 'cinta']
+
 =head2 $td->col_name($idx) => str
 
 Return the name of column referred to by its index/position. Undef if column is
@@ -267,6 +299,18 @@ Return the index/position of column referred to by its name. Undef if column is
 unknown.
 
 See also: C<col_name()>.
+
+=head2 $td->row($idx) => s/aos/hos
+
+Get a specific row (C<$idx> is 0 to mean first row, 1 for second, ...).
+
+=head2 $td->row_as_aos($idx) => aos
+
+Get a specific row (C<$idx> is 0 to mean first row, 1 for second, ...) as aos.
+
+=head2 $td->row_as_hos($idx) => hos
+
+Get a specific row (C<$idx> is 0 to mean first row, 1 for second, ...) as hos.
 
 =head2 $td->rows() => array
 
@@ -377,11 +421,14 @@ Die if either column is unknown. Will simply return if both are the same column.
 
 Might modify data (e.g. in aohos). Will modify spec, if spec was given.
 
-=head2 $td->add_col($name [ , $idx [ , $spec ] ])
+=head2 $td->add_col($name [ , $idx [ , $spec [ , \@data ] ] ])
 
 Add a column named C<$name>. If C<$idx> is specified, will set the position of
 the new column (and existing columns will shift to the right at that position).
 If C<$idx> is not specified, will put the new column at the end.
+
+C<@data> is the value of the new column for each row. If not specified, the new
+column will be set to C<undef>.
 
 Does not make sense for table form which can only have a fixed number of
 columns, e.g. aos, or hash.
