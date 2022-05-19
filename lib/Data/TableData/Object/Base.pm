@@ -227,6 +227,19 @@ sub rename_col { die "Must be implemented by subclass" }
 
 sub switch_cols { die "Must be implemented by subclass" }
 
+sub iter {
+    my $self = shift;
+    my $i = 0;
+    my $count = $self->row_count;
+    sub {
+        if ($i < $count) {
+            $self->row($i++);
+        } else {
+            undef;
+        }
+    };
+}
+
 1;
 # ABSTRACT: Base class for Data::TableData::Object::*
 
@@ -439,3 +452,12 @@ Set value of (all rows of) a column. C<$value_sub> is a coderef which will be
 given hash arguments containing these keys: C<table> (the
 Data::TableData::Object instance), C<row_idx> (row number, 0-based), C<col_name>
 (column name), C<col_idx> (column index, 0-based), C<value> (current value).
+
+=head2 $td->iter
+
+Generate a simple (coderef) iterator to iterate rows of the table. Will call
+row() repeatedly from the first row (index 0) to the last (determined by
+$td->row_count). After the rows are exhausted, the iterator will return
+C<undef>. Note that for an aos table, it is possible that a row has the value of
+C<undef> and thus the iterator can return C<undef> before the rows are
+exhausted.
