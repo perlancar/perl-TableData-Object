@@ -177,6 +177,10 @@ This class lets you manipulate a hash as a table object. The table will have two
 columns named C<key> (containing hash keys) and C<value> (containing hash
 values).
 
+Implementation notes: C<rows*()> methods sort the hash keys so you get the same
+order of rows every time. The C<row()> method is currently not efficient because
+it calls C<rows()> first to get a sorted list of rows, then pick from that.
+
 
 =head1 METHODS
 
