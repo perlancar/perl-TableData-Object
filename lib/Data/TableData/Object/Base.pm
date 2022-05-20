@@ -331,7 +331,7 @@ Return rows as array(ref). Each element (row) can either be a scalar (in the
 case of hash or aos table data) or aos (in the case of aoaos table data) or hos
 (in the case of aohos table data).
 
-This is appropriate if you only want the rows and do not care about the fom of
+This is appropriate if you only want the rows and do not care about the form of
 the row, for example if you want to output some of the rows or shuffle them.
 
 See also: C<rows_as_aoaos()> and C<rows_as_aohos()>.
